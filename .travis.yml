@@ -3,3 +3,4 @@ python:
   - "2.7"
 install: make build_env
 script:  make run_tests
+after_script: coveralls
