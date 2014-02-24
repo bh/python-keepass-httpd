@@ -12,6 +12,9 @@ test_debug:	build_env
 	py.test --cov=keepass_http --cov-report=term-missing --capture=no
 	
 test:	build_env
+	run_tests
+	
+run_tests:
 	py.test --cov=keepass_http --cov-report=term-missing
 	
 show_html_coverage:	test
