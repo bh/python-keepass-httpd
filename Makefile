@@ -1,9 +1,3 @@
-default:
-	all
-	
-all:
-	test
-	
 build_env:
 	python setup.py develop > /dev/null
 	pip install -r requirements/testing.txt > /dev/null
@@ -11,11 +5,10 @@ build_env:
 test_debug:	build_env
 	py.test --cov=keepass_http --cov-report=term-missing --capture=no
 	
-test:	build_env
-	run_tests
-	
 run_tests:
 	py.test --cov=keepass_http --cov-report=term-missing
+	
+test:	build_env run_tests
 	
 show_html_coverage:	test
 	rm -rf coverage_html_report/
@@ -30,3 +23,4 @@ style:
 	isort -rc .	
 	@echo "Pyflakes..."
 	find . -name "*.py" -exec pyflakes {} \;
+	
