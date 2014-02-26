@@ -8,4 +8,6 @@ coverage_html_report/
 *.mo
 *.py[cod]
 *.egg-info
-
+__pycache__
+*.pydevproject
+*.project
