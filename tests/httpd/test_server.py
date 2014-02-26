@@ -1,7 +1,8 @@
-from keepass_http.httpd.server import KeepassHTTPServer
+import SocketServer
 
 import mock
-import SocketServer
+
+from keepass_http.httpd.server import KeepassHTTPServer
 
 
 @mock.patch.object(SocketServer.ThreadingTCPServer, "__init__")

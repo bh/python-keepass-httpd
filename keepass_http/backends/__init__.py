@@ -11,6 +11,7 @@ class NoBackendError(Exception):
 
 
 class EntrySpec:
+
     def __init__(self, uuid, title, login, password, url):
         self.uuid = uuid
         self.title = title
@@ -23,7 +24,7 @@ class EntrySpec:
                 "Login": kpc.encrypt(self.username),
                 "Uuid": kpc.encrypt(self.uuid),
                 "Password": kpc.encrypt(self.password),
-        }
+                }
 
     def __eq__(self, other):
         # FIXME: uuid handling?
@@ -35,6 +36,7 @@ class EntrySpec:
 
 
 class Entries:
+
     def __init__(self):
         self.items = []
 
@@ -51,6 +53,7 @@ class Entries:
 
     def purge(self):
         self.items = []
+
 
 class Backend:
     __metaclass__ = abc.ABCMeta

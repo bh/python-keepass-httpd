@@ -1,7 +1,6 @@
 
 from setuptools import setup
 
-
 setup(name='keepass_http',
       version='0.2',
       description='Python Keepass HTTPD for ChromeIPass',
@@ -12,4 +11,4 @@ setup(name='keepass_http',
       packages=["keepass_http"],
       scripts=["scripts/python-keepass-httpd.py"],
       install_requires=open("requirements/package.txt").read().splitlines(),
-)
+      )

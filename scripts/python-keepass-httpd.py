@@ -17,7 +17,6 @@ Options:
 import sys
 
 import daemon
-
 import docopt
 import lockfile
 import setproctitle
@@ -61,7 +60,6 @@ if __name__ == '__main__':
                                        files_preserve=[server.fileno()],
                                        pidfile=lockfile.FileLock('/tmp/spam.pid'),
                                        )
-
 
         with context:
             setproctitle.setproctitle("Keepass HTTPD server on %s:%s" % (host, port))

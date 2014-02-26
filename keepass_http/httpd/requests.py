@@ -63,6 +63,7 @@ class Request:
         # Todo: implement
         raise NotImplementedError
 
+
 class TestAssociateRequest(Request):
 
     def get_response(self, request_dict):

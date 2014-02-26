@@ -1,8 +1,8 @@
 import mock
 import pytest
 
-from keepass_http.httpd.server import KeepassHTTPRequestHandler
 from keepass_http.httpd import requests
+from keepass_http.httpd.server import KeepassHTTPRequestHandler
 
 
 class TestServer(mock.Mock):

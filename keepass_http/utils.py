@@ -4,7 +4,7 @@ import sys
 
 logger = logging.getLogger(__name__)
 
-#TODO: better logging configuration
+# TODO: better logging configuration
 
 logging.config.dictConfig({
     'version': 1,
