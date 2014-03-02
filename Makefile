@@ -1,16 +1,13 @@
-build_env:
+dev_build_env:
 	python setup.py develop > /dev/null
-	pip install -r requirements/testing.txt > /dev/null
+	pip install -r requirements/devel.txt > /dev/null
 	
-test_debug:	build_env
-	py.test --cov=keepass_http --cov-report=term-missing --capture=no
-	
-run_tests:
+dev_run_tests:
 	py.test --cov=keepass_http --cov-report=term-missing
 	
-test:	build_env run_tests
+dev_test:	dev_build_env	dev_run_tests
 	
-show_html_coverage:	test
+show_html_coverage:	dev_test
 	rm -rf coverage_html_report/
 	coverage html
 	xdg-open coverage_html_report/index.html
@@ -24,3 +21,6 @@ style:
 	@echo "Pyflakes..."
 	find . -name "*.py" -exec pyflakes {} \;
 	
+clean:
+	find . -name __pycache__ -type d -exec rm -rf {} \;
+	find . -name "*.pyc" -delete

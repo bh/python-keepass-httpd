@@ -2,8 +2,8 @@ language: python
 python:
   - "2.7"
 install: 
-  - "make build_env"
+  - "make dev_build_env"
 script:  
-  - "make run_tests"
+  - "make dev_run_tests"
 after_success: 
   - "coveralls"
