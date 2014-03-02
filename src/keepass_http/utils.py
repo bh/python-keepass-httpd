@@ -1,51 +1,10 @@
-import logging
+import errno
 import logging.config
+import os
+import shutil
 import sys
 
-logger = logging.getLogger(__name__)
-
-# TODO: better logging configuration
-
-logging.config.dictConfig({
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'standard': {
-            "format": '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
-        },
-        "exception": {
-            "format": "%(asctime)s %(levelname)-8s %(name)-16s %(message)s"
-                      " [%(filename)s%(lineno)d in %(funcName)s]"
-        }
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            "formatter": "standard",
-            'class': 'logging.StreamHandler',
-        },
-        'info_logger': {
-            'level': 'INFO',
-            "formatter": "standard",
-            'class': 'logging.FileHandler',
-            "filename": "/tmp/bla.log"
-        },
-        'error_logger': {
-            'level': 'ERROR',
-            "formatter": "exception",
-            'class': 'logging.FileHandler',
-            "filename": "/tmp/bla.error.log"
-        },
-    },
-    'loggers': {
-        '': {
-            'handlers': ['console', 'info_logger', "error_logger"],
-            'level': 'INFO',
-            'propagate': True
-        }
-    }
-})
-
+import pkg_resources
 
 # http://stackoverflow.com/a/3041990
 def query_yes_no(question, default="yes"):  # pragma: no cover
@@ -92,6 +51,7 @@ def mkdir_p(path):
             raise
 
 class ConfDir(object):
+    logging_initialzed = False
 
     def __init__(self):
         if is_pytest_running():
@@ -102,3 +62,19 @@ class ConfDir(object):
         self.logdir = os.path.join(self.dir, "log")
         mkdir_p(self.dir)
         mkdir_p(self.logdir)
+
+    def initialize_logging(self):
+
+        if not ConfDir.logging_initialzed:
+            logging_conf = os.path.join(self.dir, "logging.conf")
+            ConfDir.logging_initialzed = True
+
+            # create basic logging config
+            if not os.path.exists(logging_conf):
+                logging_template = pkg_resources.resource_filename(__name__, "conf/logging.conf")
+                shutil.copy(logging_template, logging_conf)
+
+            logging.config.fileConfig(logging_conf, disable_existing_loggers=True,
+                                      defaults={"LOGGING_DIR": self.logdir})
+            log = logging.getLogger(__name__)
+            log.debug("Logging conf read from: %s" % logging_conf)
