@@ -13,23 +13,25 @@ Options:
   -h --host HOST          Specify a host [default: 127.0.0.1]
 
 """
-
+#
+import logging
+import os
 import sys
 
 import daemon
+
 import docopt
 import lockfile
 import setproctitle
-
 from keepass_http import backends
 from keepass_http.httpd.server import (KeepassHTTPRequestHandler,
                                        KeepassHTTPServer)
-from keepass_http.utils import logging
+from keepass_http.utils import ConfDir
 
 sys.path.append("..")
+log = logging.getLogger("keepass_http_script")
 
 
-log = logging.getLogger(__name__)
 
 
 def main():
@@ -54,9 +56,11 @@ def main():
     log.debug("Use Keepass Backend: %s" % backend.__class__.__name__)
     log.info("Server started on %s:%s" % (host, port))
 
+    kpconf = ConfDir()
+
     if is_daemon:
-        context = daemon.DaemonContext(stdout=open("/tmp/o.log", "w"),
-                                       stderr=open("/tmp/e.log", "w"),
+        context = daemon.DaemonContext(stdout=open(os.path.join(kpconf.logdir, "daemon-info.log"), "w"),
+                                       stderr=open(os.path.join(kpconf.logdir, "daemon-error.log"), "w"),
                                        files_preserve=[server.fileno()],
                                        pidfile=lockfile.FileLock('/tmp/spam.pid'),
                                        )

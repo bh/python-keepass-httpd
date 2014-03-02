@@ -1,8 +1,8 @@
 import json
+import logging
 import SocketServer
 
 from keepass_http.httpd import requests
-from keepass_http.utils import logging
 
 log = logging.getLogger(__name__)
 

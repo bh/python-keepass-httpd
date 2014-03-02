@@ -1,7 +1,8 @@
 import abc
+import logging
 
 from keepass_http.crypto import AESEncryption
-from keepass_http.utils import logging, query_yes_no
+from keepass_http.utils import query_yes_no
 
 log = logging.getLogger(__name__)
 
