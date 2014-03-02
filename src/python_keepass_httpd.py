@@ -32,7 +32,7 @@ sys.path.append("..")
 log = logging.getLogger(__name__)
 
 
-if __name__ == '__main__':
+def main():
     arguments = docopt.docopt(__doc__)
 
     is_daemon = arguments["--daemon"]
@@ -67,3 +67,6 @@ if __name__ == '__main__':
 
     else:
         server.serve_forever()
+
+if __name__ == '__main__':
+    main()
