@@ -79,3 +79,26 @@ def query_yes_no(question, default="yes"):  # pragma: no cover
         else:
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
+def is_pytest_running():
+    return hasattr(sys, "_pytest_is_running")
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
+class ConfDir(object):
+
+    def __init__(self):
+        if is_pytest_running():
+            import tempfile
+            self.dir = tempfile.mkdtemp()
+        else:
+            self.dir = os.path.expanduser("~/.python-keepass-httpd")
+        self.logdir = os.path.join(self.dir, "log")
+        mkdir_p(self.dir)
+        mkdir_p(self.logdir)
