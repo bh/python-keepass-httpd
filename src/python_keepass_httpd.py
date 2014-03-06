@@ -13,10 +13,9 @@ Options:
   -h --host HOST          Specify a host [default: 127.0.0.1]
 
 """
-#
+
 import logging
 import os
-import sys
 
 import daemon
 
@@ -28,10 +27,7 @@ from keepass_http.httpd.server import (KeepassHTTPRequestHandler,
                                        KeepassHTTPServer)
 from keepass_http.utils import ConfDir
 
-sys.path.append("..")
 log = logging.getLogger("keepass_http_script")
-
-
 
 
 def main():
