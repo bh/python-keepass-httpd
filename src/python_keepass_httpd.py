@@ -19,14 +19,15 @@ import logging
 import os
 
 import daemon
-
 import docopt
-import lockfile
-#import setproctitle
+from lockfile import pidlockfile
+
 from keepass_http import backends
 from keepass_http.httpd.server import (KeepassHTTPRequestHandler,
                                        KeepassHTTPServer)
 from keepass_http.utils import ConfDir
+
+#import setproctitle
 
 
 def main():
@@ -40,33 +41,32 @@ def main():
     assert port.isdigit()
     loglevel = arguments["--loglevel"]
 
+    # basic config
     kpconf = ConfDir()
     kpconf.initialize_logging(loglevel)
     log = logging.getLogger("keepass_http_script")
-
-    # backend
-    backend_class = backends.get_backend_by_file(database_path)
-    backend = backend_class(database_path, passphrase)
 
     # server
     server = KeepassHTTPServer((host, int(port)), KeepassHTTPRequestHandler)
     server.set_is_daemon(is_daemon)
     log.info("Server started on %s:%s" % (host, port))
 
+    # backend
+    backend_class = backends.get_backend_by_file(database_path)
+    backend = backend_class(database_path, passphrase)
     server.set_backend(backend)
     log.debug("Use Keepass Backend: %s" % backend.__class__.__name__)
 
-    if is_daemon:
-        files_to_preserve = kpconf.get_logging_handler_streams() + [server.fileno()]
-        context = daemon.DaemonContext(files_preserve=files_to_preserve,
-                                       pidfile=lockfile.FileLock('/tmp/spam.pid'),
-                                       )
+    # config daemon context
+    files_to_preserve = kpconf.get_logging_handler_streams() + [server.fileno()]
+    pid_file = pidlockfile.PIDLockFile(os.path.join(kpconf.dir, "process.pid"))
+    daemon_context = daemon.DaemonContext(detach_process=is_daemon,
+                                          files_preserve=files_to_preserve,
+                                          pidfile=pid_file)
 
-        with context:
-            log.debug("Process is forking to background...")
-            server.serve_forever()
-
-    else:
+    with daemon_context:
+        if is_daemon:
+            log.info("Process forked to background - PID: %s" % os.getpid())
         server.serve_forever()
 
 if __name__ == '__main__':

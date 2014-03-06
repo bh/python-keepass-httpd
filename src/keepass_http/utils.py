@@ -6,7 +6,6 @@ import sys
 
 import pkg_resources
 
-
 # http://stackoverflow.com/a/3041990
 def query_yes_no(question, default="yes"):  # pragma: no cover
     """Ask a yes/no question via raw_input() and return their answer.
