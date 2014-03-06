@@ -15,7 +15,7 @@ show_html_coverage:	dev_test
 style:
 	@echo "Autopep8..."
 	autopep8 --aggressive --max-line-length=100 --indent-size=4 \
-		 --in-place -r scripts/* tests/* keepass_http/*
+		 --in-place -r tests/* keepass_http/*
 	@echo "Formatting python imports..."
 	isort -rc .	
 	@echo "Pyflakes..."
