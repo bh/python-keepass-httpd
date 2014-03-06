@@ -63,7 +63,7 @@ class ConfDir(object):
         mkdir_p(self.dir)
         mkdir_p(self.logdir)
 
-    def initialize_logging(self):
+    def initialize_logging(self, level=None):
 
         if not ConfDir.logging_initialzed:
             logging_conf = os.path.join(self.dir, "logging.conf")
@@ -76,5 +76,18 @@ class ConfDir(object):
 
             logging.config.fileConfig(logging_conf, disable_existing_loggers=True,
                                       defaults={"LOGGING_DIR": self.logdir})
+
+            if level:
+                self.set_loglevel(level)
+
             log = logging.getLogger(__name__)
             log.debug("Logging conf read from: %s" % logging_conf)
+
+            if level:
+                log.debug("Set loglevel to: %s" % level)
+
+    def set_loglevel(self, level):
+        for handler in logging._handlerList:
+            handler = handler()
+            handler.setLevel(level)
+
