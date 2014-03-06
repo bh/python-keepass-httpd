@@ -6,6 +6,7 @@ import sys
 
 import pkg_resources
 
+
 # http://stackoverflow.com/a/3041990
 def query_yes_no(question, default="yes"):  # pragma: no cover
     """Ask a yes/no question via raw_input() and return their answer.
@@ -38,8 +39,11 @@ def query_yes_no(question, default="yes"):  # pragma: no cover
         else:
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
+
+
 def is_pytest_running():
     return hasattr(sys, "_pytest_is_running")
+
 
 def mkdir_p(path):
     try:
@@ -49,6 +53,7 @@ def mkdir_p(path):
             pass
         else:
             raise
+
 
 class ConfDir(object):
     logging_initialzed = False
@@ -63,8 +68,7 @@ class ConfDir(object):
         mkdir_p(self.dir)
         mkdir_p(self.logdir)
 
-    def initialize_logging(self):
-
+    def initialize_logging(self, level=None):
         if not ConfDir.logging_initialzed:
             logging_conf = os.path.join(self.dir, "logging.conf")
             ConfDir.logging_initialzed = True
@@ -76,5 +80,31 @@ class ConfDir(object):
 
             logging.config.fileConfig(logging_conf, disable_existing_loggers=True,
                                       defaults={"LOGGING_DIR": self.logdir})
+
+            if level:
+                self.set_loglevel(level)
+
             log = logging.getLogger(__name__)
             log.debug("Logging conf read from: %s" % logging_conf)
+
+            if level:
+                log.debug("Set loglevel to: %s" % level)
+
+    @staticmethod
+    def set_loglevel(level):
+        """
+        Set the loglevel for all registered logging handlers.
+
+        """
+        for handler in logging._handlerList:
+            handler = handler()
+            handler.setLevel(level)
+
+    @staticmethod
+    def get_logging_handler_streams():
+        """
+        Return all open file handlers for logging stream loggers.
+        This is used to avoid closing open file handlers while detaching to background.
+
+        """
+        return [handler().stream for handler in logging._handlerList]
