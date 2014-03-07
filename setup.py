@@ -4,7 +4,7 @@ with open("requirements/package.txt") as requirements_file:
     requirements = requirements_file.read().splitlines()
 
 setup(name="keepass_http",
-      version="0.2",
+      version="0.3",
       description="Python Keepass HTTPD for ChromeIPass",
       author="Benjamin Hedrich",
       author_email="kiwisauce@pagenotfound.de",
