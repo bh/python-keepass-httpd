@@ -5,4 +5,5 @@ ipython==1.1.0
 autopep8==1.0
 isort==3.6.0
 git+git://github.com/pyflakes/pyflakes.git@1fc3faf1320c7#egg=pyflakes
+bumpversion==0.4.1
 wheel==0.22.0
