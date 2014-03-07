@@ -1,2 +1,2 @@
-recursive-include conf *.conf
+include src/keepass_http/conf/logging.conf
 include README.md

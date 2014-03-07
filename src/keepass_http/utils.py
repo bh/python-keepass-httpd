@@ -4,7 +4,7 @@ import os
 import shutil
 import sys
 
-from pkg_resources import Requirement, resource_filename
+import pkg_resources
 
 # http://stackoverflow.com/a/3041990
 def query_yes_no(question, default="yes"):  # pragma: no cover
@@ -41,7 +41,7 @@ def query_yes_no(question, default="yes"):  # pragma: no cover
 
 
 def get_absolute_path_to_resource(relative_path):
-    return resource_filename(Requirement.parse(__name__), relative_path)
+    return pkg_resources.resource_filename("keepass_http", relative_path)
 
 def is_pytest_running():
     return hasattr(sys, "_pytest_is_running")
