@@ -24,3 +24,5 @@ style:
 clean:
 	find . -name __pycache__ -type d -exec rm -rf {} \;
 	find . -name "*.pyc" -delete
+	find . -name "*.egg-info" -exec rm -rf {} \;
+	rm -rf dist/ build/
