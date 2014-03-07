@@ -4,7 +4,7 @@ import os
 import shutil
 import sys
 
-import pkg_resources
+from pkg_resources import Requirement, resource_filename
 
 # http://stackoverflow.com/a/3041990
 def query_yes_no(question, default="yes"):  # pragma: no cover
@@ -40,6 +40,9 @@ def query_yes_no(question, default="yes"):  # pragma: no cover
                              "(or 'y' or 'n').\n")
 
 
+def get_absolute_path_to_resource(relative_path):
+    return resource_filename(Requirement.parse(__name__), relative_path)
+
 def is_pytest_running():
     return hasattr(sys, "_pytest_is_running")
 
@@ -69,12 +72,13 @@ class ConfDir(object):
 
     def initialize_logging(self, level=None):
         if not ConfDir.logging_initialzed:
+
             logging_conf = os.path.join(self.dir, "logging.conf")
             ConfDir.logging_initialzed = True
 
             # create basic logging config
             if not os.path.exists(logging_conf):
-                logging_template = pkg_resources.resource_filename(__name__, "conf/logging.conf")
+                logging_template = get_absolute_path_to_resource("conf/logging.conf")
                 shutil.copy(logging_template, logging_conf)
 
             logging.config.fileConfig(logging_conf, disable_existing_loggers=True,

@@ -12,10 +12,8 @@ setup(name="keepass_http",
       package_dir={"": "src"},
       packages=find_packages("src/", exclude="tests"),
       install_requires=requirements,
-      scripts=["src/python_keepass_httpd.py"],
-      zip_safe=False,
+      scripts=["bin/python_keepass_httpd"],
       include_package_data=True,
-      package_data={"keepass_http":
-                        ['conf/*.conf']
-      },
+      data_files=[("conf", ["conf/logging.conf"])],
+      zip_safe=False,
 )
