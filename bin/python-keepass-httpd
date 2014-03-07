@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """
 Usage:
   ./python-keepass-httpd.py start <database_path> <passphrase> [options]

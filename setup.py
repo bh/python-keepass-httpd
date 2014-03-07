@@ -12,7 +12,7 @@ setup(name="keepass_http",
       package_dir={"": "src"},
       packages=find_packages("src/", exclude="tests"),
       install_requires=requirements,
-      scripts=["bin/python_keepass_httpd"],
+      scripts=["bin/python-keepass-httpd"],
       include_package_data=True,
       zip_safe=False,
 )
