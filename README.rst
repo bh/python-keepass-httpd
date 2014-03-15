@@ -36,7 +36,7 @@ The output should be look like this:
 ::
 
     Usage:
-      ./python-keepass-httpd.py start <database_path> <passphrase> [options]
+      ./python-keepass-httpd.py run <database_path> [options]
       ./python-keepass-httpd.py (-h | --help)
       ./python-keepass-httpd.py --version
 
@@ -54,7 +54,7 @@ Starting the server
 
 .. code:: bash
 
-    $ python-keepass-httpd start /home/kiwisauce/Dropbox/test.kdb my_secure_password
+    $ python-keepass-httpd run /home/kiwisauce/Dropbox/test.kdb
     2014-03-07 13:28:04,534 [INFO] keepass_http_script: Server started on 127.0.0.1:19455
 
 The server was started. Now we have to setup ChromeIPass.

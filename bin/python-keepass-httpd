@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 """
 Usage:
-  ./python-keepass-httpd.py start <database_path> <passphrase> [options]
+  ./python-keepass-httpd.py run <database_path> [options]
   ./python-keepass-httpd.py (-h | --help)
   ./python-keepass-httpd.py --version
 
@@ -15,8 +15,10 @@ Options:
 
 """
 
+import getpass
 import logging
 import os
+import sys
 
 import daemon
 import docopt
@@ -35,7 +37,6 @@ def main():
 
     is_daemon = arguments["--daemon"]
     database_path = arguments["<database_path>"]
-    passphrase = arguments["<passphrase>"]
     host = arguments["--host"]
     port = arguments["--port"]
     assert port.isdigit()
@@ -53,7 +54,24 @@ def main():
 
     # backend
     backend_class = backends.get_backend_by_file(database_path)
-    backend = backend_class(database_path, passphrase)
+
+    try_count = 1
+    max_try_count = 3
+    success = False
+    while try_count <= max_try_count:
+        passphrase = getpass.getpass("Please enter the passphrase for database %s: \n" % database_path)
+        try:
+            backend = backend_class(database_path, passphrase)
+        except backends.WrongPassword:
+            print "Wrong password, please try again."
+            try_count += 1
+        else:
+            success = True
+            break
+
+    if success is False:
+        sys.exit("Wrong password after %d attempts" % max_try_count)
+
     server.set_backend(backend)
     log.debug("Use Keepass Backend: %s" % backend.__class__.__name__)
 

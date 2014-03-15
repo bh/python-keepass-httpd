@@ -9,6 +9,9 @@ from keepass import kpdb
 class NoBackendError(Exception):
     pass
 
+class WrongPassword(Exception):
+    pass
+
 
 class EntrySpec:
 
@@ -105,7 +108,10 @@ class KeePassHTTPBackend(Backend):
         return False
 
     def open_database(self):
-        return kpdb.Database(self.database_path, self.passphrase)
+        try:
+            return kpdb.Database(self.database_path, self.passphrase)
+        except ValueError:
+            raise WrongPassword("Incorrect password")
 
     def sync_entries(self):
         self.entries.purge()
