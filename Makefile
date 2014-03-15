@@ -26,3 +26,7 @@ clean:
 	find . -name "*.pyc" -delete
 	find . -name "*.egg-info" -exec rm -rf {} \;
 	rm -rf dist/ build/
+	
+publish_release:
+	python setup.py sdist --formats=bztar,zip,gztar upload
+	python setup.py bdist_wheel upload
