@@ -77,7 +77,7 @@ def main():
 
     # config daemon context
     files_to_preserve = kpconf.get_logging_handler_streams() + [server.fileno()]
-    pid_file = pidlockfile.PIDLockFile(os.path.join(kpconf.dir, "process.pid"))
+    pid_file = pidlockfile.PIDLockFile(os.path.join(kpconf.confdir, "process.pid"))
     daemon_context = daemon.DaemonContext(detach_process=is_daemon,
                                           files_preserve=files_to_preserve,
                                           pidfile=pid_file)
