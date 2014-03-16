@@ -82,10 +82,12 @@ def main():
                                           files_preserve=files_to_preserve,
                                           pidfile=pid_file)
 
+    server.serve_forever()
+
     with daemon_context:
         if is_daemon:
             log.info("Process forked to background - PID: %s" % os.getpid())
-        server.serve_forever()
+        
 
 if __name__ == '__main__':
     main()

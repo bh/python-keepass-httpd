@@ -176,9 +176,7 @@ class KeePass2HTTPBackend(Backend):
 
     def open_database(self):
         with libkeepass.open(self.database_path, password=self.passphrase) as kdb:
-            print "opening database kdbx blafoo"
             return kdb
-        print "ups opening database was weird"
 
     def sync_entries(self):
         self.entries.purge()
@@ -303,17 +301,13 @@ class KeePass2HTTPBackend(Backend):
                        url=url)
 
     def get_config(self, client_name):
-        print "getting config " + client_name
         self.sync_entries()
-        print "synced successfully"
         try:
             entry = self.entries.search_by_field("title", client_name)
             key = entry[0].password
         except IndexError:
-            print "error getting config"
             return None
         else:
-            print "got key successfully"
             return key
 
 
