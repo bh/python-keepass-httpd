@@ -3,8 +3,8 @@ from setuptools import find_packages, setup
 with open("requirements/package.txt") as requirements_file:
     requirements = requirements_file.read().splitlines()
 
-with open("README.rst") as requirements_file:
-    long_description = requirements_file.read()
+with open("README.rst") as readme_file:
+    long_description = readme_file.read()
 
 setup(name="keepass_http",
       version="0.3",
