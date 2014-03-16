@@ -7,7 +7,7 @@ with open("README.rst") as readme_file:
     long_description = readme_file.read()
 
 setup(name="keepass_http",
-      version="0.3",
+      version="0.3.5",
       description="Python Keepass HTTPD for ChromeIPass",
       long_description=long_description,
       author="Benjamin Hedrich",
