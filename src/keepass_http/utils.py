@@ -54,6 +54,11 @@ def mkdir_p(path):
         if not (exc.errno == errno.EEXIST and os.path.isdir(path)):
             raise  # pragma: no cover
 
+def is_python_26():
+    return (2, 5) < sys.version_info < (2, 7)
+
+def is_python_27():
+    return (2, 6) < sys.version_info < (2, 8)
 
 class ConfDir(object):
     logging_initialzed = False
@@ -98,8 +103,11 @@ class ConfDir(object):
 
         """
         for handler in logging._handlerList:
-            handler = handler()
-            handler.setLevel(level)
+            if is_python_26():
+                handler.setLevel(logging._levelNames[level])
+            elif is_python_27():
+                handler = handler()
+                handler.setLevel(level)
 
     @staticmethod
     def get_logging_handler_streams():
@@ -108,4 +116,7 @@ class ConfDir(object):
         This is used to avoid closing open file handlers while detaching to background.
 
         """
-        return [handler().stream for handler in logging._handlerList]
+        if is_python_26():
+            return [handler.stream for handler in logging._handlerList]
+        elif is_python_27():
+            return [handler().stream for handler in logging._handlerList]

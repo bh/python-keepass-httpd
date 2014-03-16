@@ -17,6 +17,7 @@ setup(name="keepass_http",
       packages=find_packages("src/", exclude="tests"),
       install_requires=requirements,
       scripts=["bin/python-keepass-httpd"],
+      dependency_links=['https://github.com/bhedrich/python-keepass/archive/master.zip#egg=keepass-1.1'],
       include_package_data=True,
       zip_safe=False,
 )
