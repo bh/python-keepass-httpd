@@ -29,6 +29,7 @@ clean:
 	find . -name "*.pyc" -delete
 	find . -name "*.egg-info" -exec rm -rf {} \;
 	rm -rf dist/ build/
+	rm -rf ./src/keepass_http.egg-info
 	
 publish_release:
 	python setup.py sdist --formats=bztar,zip,gztar upload
