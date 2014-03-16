@@ -51,10 +51,8 @@ def mkdir_p(path):
     try:
         os.makedirs(path)
     except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
-        else:
-            raise
+        if not (exc.errno == errno.EEXIST and os.path.isdir(path)):
+            raise  # pragma: no cover
 
 
 class ConfDir(object):
@@ -63,17 +61,17 @@ class ConfDir(object):
     def __init__(self):
         if is_pytest_running():
             import tempfile
-            self.dir = tempfile.mkdtemp()
+            self.confdir = tempfile.mkdtemp()
         else:
-            self.dir = os.path.expanduser("~/.python-keepass-httpd")
-        self.logdir = os.path.join(self.dir, "log")
-        mkdir_p(self.dir)
+            self.confdir = os.path.expanduser("~/.python-keepass-httpd")  # pragma: no cover
+        self.logdir = os.path.join(self.confdir, "log")
+        mkdir_p(self.confdir)
         mkdir_p(self.logdir)
 
     def initialize_logging(self, level=None):
         if not ConfDir.logging_initialzed:
 
-            logging_conf = os.path.join(self.dir, "logging.conf")
+            logging_conf = os.path.join(self.confdir, "logging.conf")
             ConfDir.logging_initialzed = True
 
             # create basic logging config

@@ -5,6 +5,9 @@ dev_build_env:
 dev_run_tests:
 	py.test --cov=keepass_http --cov-report=term-missing
 	
+dev_run_tests_verbose:
+	py.test --cov=keepass_http --cov-report=term-missing --capture=no
+	
 dev_test:	dev_build_env	dev_run_tests
 	
 show_html_coverage:	dev_test
