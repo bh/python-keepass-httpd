@@ -3,8 +3,8 @@ python:
   - "2.7"
   - "2.6"
 install: 
-  - "make dev_build_env"
+  - "make build_test_env"
 script:  
-  - "make dev_run_tests"
+  - "make run_tests"
 after_success: 
   - "coveralls"
