@@ -1,8 +1,5 @@
 from setuptools import find_packages, setup
 
-with open("requirements/package.txt") as requirements_file:
-    requirements = requirements_file.read().splitlines()
-
 with open("README.rst") as readme_file:
     long_description = readme_file.read()
 
@@ -15,9 +12,14 @@ setup(name="keepass_http",
       url="https://github.com/bhedrich/python-keepass-httpd/",
       package_dir={"": "src"},
       packages=find_packages("src/", exclude="tests"),
-      install_requires=requirements,
       scripts=["bin/python-keepass-httpd"],
       dependency_links=['https://github.com/bhedrich/python-keepass/archive/master.zip#egg=keepass-1.1'],
       include_package_data=True,
+      install_requires=("pycrypto==2.6.1",
+                        "keepass==1.1",
+                        "wsgiref==0.1.2",
+                        "python-daemon==1.6",
+                        "docopt==0.6.1",
+                        "setproctitle==1.1.8"),
       zip_safe=False,
 )

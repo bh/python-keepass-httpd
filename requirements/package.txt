@@ -1,6 +1,0 @@
-pycrypto==2.6.1
-keepass==1.1
-wsgiref==0.1.2
-python-daemon==1.6
-docopt==0.6.1
-setproctitle==1.1.8
