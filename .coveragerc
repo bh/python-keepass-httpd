@@ -1,5 +1,5 @@
 [run]
-omit = tests/*
+#omit = src/tests/*
 branch = True
 
 [report]
@@ -8,7 +8,7 @@ exclude_lines =
     pragma: no cover
     @abc
 
-ignore_errors = True
+#ignore_errors = True
 
 [html]
 directory = coverage_html_report

@@ -7,10 +7,10 @@ build_test_env:
 	pip install -r requirements/testing.txt
 	
 run_tests:
-	py.test --cov=keepass_http --cov-report=term-missing
+	py.test --cov=src/keepass_http --cov-report=term-missing
 	
 dev_run_tests_verbose:
-	py.test --cov=keepass_http --cov-report=term-missing --capture=no
+	py.test --cov=src/keepass_http --cov-report=term-missing --capture=no
 	
 dev_test:	dev_build_env	run_tests
 	
@@ -24,7 +24,7 @@ show_html_coverage:	dev_test
 style:
 	@echo "Autopep8..."
 	autopep8 --aggressive --max-line-length=100 --indent-size=4 \
-		 --in-place -r tests/* keepass_http/*
+		 --in-place -r keepass_http/*
 	@echo "Formatting python imports..."
 	isort -rc .	
 	@echo "Pyflakes..."
@@ -39,3 +39,4 @@ clean:
 publish_release:
 	python setup.py sdist --formats=bztar,zip,gztar upload
 	python setup.py bdist_wheel upload
+

@@ -1,7 +1,8 @@
 import os
 import shutil
 
-from keepass_http.backends import EntrySpec, KeePassHTTPBackend
+from keepass_http.backends import EntrySpec
+from keepass_http.backends.libkeepass_backend import KeePass2HTTPBackend
 
 TEST_DATA_ROOT = os.path.join(os.path.normpath(os.path.dirname(__file__)), "test_data")
 
@@ -12,18 +13,41 @@ def _move_test_file_to_tmpdir(_tmpdir, file_name):
     return os.path.join(str(_tmpdir), file_name)
 
 
-def test_fetch_entries_empty_database(tmpdir):
-    test_database = _move_test_file_to_tmpdir(tmpdir, "empty.kdb")
+def test_unicode_characters_correctly_read(tmpdir):
+    test_database = _move_test_file_to_tmpdir(tmpdir, "test_unicode_handling.kdbx")
 
-    backend = KeePassHTTPBackend(test_database, "abcd123")
+    backend = KeePass2HTTPBackend(test_database, "abcd123")
+    backend.sync_entries()
+
+    the_login = u'blaf\xf1oo'
+    the_url = u'unicodeinurl\xdf\xf6\xe4\\x\xf1nasdf'
+    the_password = u'blanblan' # keepassx currently doesn't support unicode in password field - https://www.keepassx.org/dev/issues/158
+    the_title = u'Unicode fu\xf1'
+
+    print repr(backend.entries.items[0].username)
+    print repr(backend.entries.items[0].url)
+    print repr(backend.entries.items[0].password)
+    print repr(backend.entries.items[0].title)
+
+    assert backend.entries.items[0] == EntrySpec(login=the_login,
+                                                    url=the_url,
+                                                    password=the_password,
+                                                    title=the_title,
+                                                    uuid="")
+
+
+def test_fetch_entries_empty_database(tmpdir):
+    test_database = _move_test_file_to_tmpdir(tmpdir, "empty.kdbx")
+
+    backend = KeePass2HTTPBackend(test_database, "abcd123")
     backend.sync_entries()
     assert len(backend.entries.items) == 0
 
 
 def test_create_config(tmpdir):
-    test_database = _move_test_file_to_tmpdir(tmpdir, "test_create_config.kdb")
+    test_database = _move_test_file_to_tmpdir(tmpdir, "test_create_config.kdbx")
 
-    backend = KeePassHTTPBackend(test_database, "abcd123")
+    backend = KeePass2HTTPBackend(test_database, "abcd123")
     backend.sync_entries()
     assert len(backend.entries.items) == 0
 
@@ -37,8 +61,8 @@ def test_create_config(tmpdir):
 
 
 def test_get_config(tmpdir):
-    test_database = _move_test_file_to_tmpdir(tmpdir, "test_get_config.kdb")
-    backend = KeePassHTTPBackend(test_database, "abcd123")
+    test_database = _move_test_file_to_tmpdir(tmpdir, "test_get_config.kdbx")
+    backend = KeePass2HTTPBackend(test_database, "abcd123")
 
     # existing associated client
     assert backend.get_config("test_name") == "test_key"
@@ -48,11 +72,11 @@ def test_get_config(tmpdir):
 
 
 def test_create_login(tmpdir):
-    test_database = _move_test_file_to_tmpdir(tmpdir, "test_create_login.kdb")
+    test_database = _move_test_file_to_tmpdir(tmpdir, "test_create_login.kdbx")
 
     test_databse_passphrase = "abcd123"
 
-    x = KeePassHTTPBackend(test_database, test_databse_passphrase)
+    x = KeePass2HTTPBackend(test_database, test_databse_passphrase)
 
     x.sync_entries()
     assert len(x.entries.items) == 1
@@ -70,7 +94,7 @@ def test_create_login(tmpdir):
     # FIXME: remove config for client!
     del x.entries.items[0]
     # first one is the client config (key)
-
+    #
     assert x.entries.items[0] == EntrySpec(login="bla@gmail.com",
                                            url='https://www.google.com/login',
                                            password='geheim',
@@ -94,9 +118,9 @@ def test_create_login(tmpdir):
 
 
 def test_get_search_entries(tmpdir):
-    test_database = _move_test_file_to_tmpdir(tmpdir, "test_search_for_entries.kdb")
+    test_database = _move_test_file_to_tmpdir(tmpdir, "test_search_for_entries.kdbx")
 
-    backend = KeePassHTTPBackend(test_database, "abcd123")
+    backend = KeePass2HTTPBackend(test_database, "abcd123")
     backend.sync_entries()
     assert len(backend.entries.items) == 5
 
