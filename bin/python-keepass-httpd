@@ -27,7 +27,7 @@ from lockfile import pidlockfile
 from keepass_http import backends
 from keepass_http.httpd.server import (KeepassHTTPRequestHandler,
                                        KeepassHTTPServer)
-from keepass_http.utils import ConfDir
+from keepass_http.utils import ConfDir, query_yes_no
 
 #import setproctitle
 
@@ -46,6 +46,14 @@ def main():
     kpconf = ConfDir()
     kpconf.initialize_logging(loglevel)
     log = logging.getLogger("keepass_http_script")
+
+    pid_file = pidlockfile.PIDLockFile(os.path.join(kpconf.confdir, "process.pid"))
+
+    if pid_file.is_locked():
+        if query_yes_no("It looks like another instance of python-keepass-http is currently running. "
+                        "Do you want to overwrite the pid file?", default="yes"):
+            existing_pid = pid_file.read_pid()
+            pid_file.break_lock()
 
     # server
     server = KeepassHTTPServer((host, int(port)), KeepassHTTPRequestHandler)
@@ -77,7 +85,6 @@ def main():
 
     # config daemon context
     files_to_preserve = kpconf.get_logging_handler_streams() + [server.fileno()]
-    pid_file = pidlockfile.PIDLockFile(os.path.join(kpconf.confdir, "process.pid"))
     daemon_context = daemon.DaemonContext(detach_process=is_daemon,
                                           files_preserve=files_to_preserve,
                                           pidfile=pid_file)
