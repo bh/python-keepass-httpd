@@ -1,9 +1,9 @@
 build_dev_env:
-	python setup.py develop
+	pip install -e .
 	pip install -r requirements/devel.txt
 	
 build_test_env:
-	python setup.py develop
+	pip install -e .
 	pip install -r requirements/testing.txt
 	
 run_tests:
@@ -33,7 +33,6 @@ style:
 clean:
 	-find . -name __pycache__ -type d -exec rm -rf {} \;
 	-find . -name "*.pyc" -delete
-	-find . -name "*.egg-info" -exec rm -rf {} \;
 	-rm -rf dist/ build/
 	
 publish_release:
