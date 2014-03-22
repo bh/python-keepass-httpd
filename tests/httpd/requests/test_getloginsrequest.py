@@ -31,11 +31,7 @@ def test_getloginsrequest_no_entries(mock_authenticate, mock_get_kpc, mock_searc
     test_server = TestServer()
 
     request = requests.GetLoginsRequest(test_server)
-    assert request.get_response(test_dict) == {'Url': 'http://www.google.de/login',
-                                               'Id': 'test_clientname',
-                                               'Success': True,
-                                               'Entries': []
-                                               }
+    assert request.get_response(test_dict) == {'Success': True, 'Entries': []}
 
 
 @mock.patch.object(TestBackend, "search_entries")
@@ -58,9 +54,7 @@ def test_associaterequest_with_entries(mock_authenticate, mock_get_kpc, mock_sea
 
     request = requests.GetLoginsRequest(test_server)
 
-    assert request.get_response(test_dict) == {'Url': 'http://www.google.de/login',
-                                               'Id': 'test_clientname',
-                                               'Success': True,
+    assert request.get_response(test_dict) == {'Success': True,
                                                'Entries': [{'Login': 'login_encrypted',
                                                             'Password': 'password_encrypted',
                                                             'Name': 'name_encrypted',

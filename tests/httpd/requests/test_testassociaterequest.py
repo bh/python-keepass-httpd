@@ -12,17 +12,17 @@ class TestServer(mock.Mock):
 
 
 @mock.patch.object(requests.Request, "authenticate")
-def test_associaterequest(mock_authenticate):
+def test_testassociaterequest(mock_authenticate):
     mock_authenticate.side_effect = requests.AuthenticationError
 
     test_dict = {"Id": "test_clientname"}
     test_server = TestServer()
     request = requests.TestAssociateRequest(test_server)
 
-    assert request.get_response(test_dict) == {"Id": "test_clientname", "Success": False}
+    assert request.get_response(test_dict) == {"Success": False}
 
 
-def test_associaterequest_invalid_clientname():
+def test_testassociaterequest_invalid_clientname():
     test_dict = {}
     test_server = TestServer()
     request = requests.TestAssociateRequest(test_server)
@@ -31,7 +31,7 @@ def test_associaterequest_invalid_clientname():
 
 
 @mock.patch.object(requests.Request, "authenticate")
-def test_associaterequest_ok(mock_authenticate):
+def test_testassociaterequest_ok(mock_authenticate):
     mock_authenticate.return_value = None
 
     test_dict = {"Id": "test_clientname"}

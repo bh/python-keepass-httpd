@@ -68,69 +68,75 @@ class Request:
 class TestAssociateRequest(Request):
 
     def get_response(self, request_dict):
-        request_dict['Success'] = False
+        response_dict = {}
+        response_dict['Success'] = False
 
+        client_name = request_dict.get("Id", None)
         # missing field -> force associate
-        if "Id" not in request_dict:
-            return request_dict
+        if not client_name:
+            return response_dict
 
         # no auth -> force associate
         try:
             self.authenticate(request_dict)
         except AuthenticationError as unused_e:
-            return request_dict
+            return response_dict
 
         # already associated, all fine
-        request_dict['Id'] = request_dict["Id"]
-        request_dict['Success'] = True
+        response_dict['Id'] = client_name
+        response_dict['Success'] = True
 
-        return request_dict
+        return response_dict
 
 
 class AssociateRequest(Request):
 
     def get_response(self, request_dict):
-        request_dict['Success'] = False
+        response_dict = {}
+        response_dict['Success'] = False
 
         if query_yes_no("Should be the client accepted?", default="no"):
             client_name = raw_input("Give the client a name: ")
             self.server.backend.create_config_key(client_name, request_dict["Key"])
-            request_dict['Id'] = client_name
-            request_dict['Success'] = True
+            response_dict['Id'] = client_name
+            response_dict['Success'] = True
 
-        return request_dict
+        return response_dict
 
 
 class GetLoginsRequest(Request):
 
     def get_response(self, request_dict):
-        request_dict['Success'] = False
+        response_dict = {}
+        response_dict['Success'] = False
 
         try:
             self.authenticate(request_dict)
         except AuthenticationError as unused_e:
-            return request_dict
+            return response_dict
 
         kpc = self.get_kpc()
         url = kpc.decrypt(request_dict['Url'])
 
-        request_dict["Entries"] = []
+        response_dict["Entries"] = []
         entries = self.server.backend.search_entries("url", url)
         for entry in entries:
-            request_dict["Entries"].append(entry.to_json_dict(kpc))
+            response_dict["Entries"].append(entry.to_json_dict(kpc))
 
-        request_dict['Success'] = True
-        return request_dict
+        response_dict['Success'] = True
+        return response_dict
 
 
 class SetLoginRequest(Request):
 
     def get_response(self, request_dict):
-        request_dict['Success'] = False
+        response_dict = {}
+        response_dict['Success'] = False
+
         try:
             self.authenticate(request_dict)
         except AuthenticationError as unused_e:
-            return request_dict
+            return response_dict
 
         kpc = self.get_kpc()
 
@@ -140,5 +146,5 @@ class SetLoginRequest(Request):
 
         self.server.backend.create_login(request_dict["Id"], login, password, url)
 
-        request_dict['Success'] = True
-        return request_dict
+        response_dict['Success'] = True
+        return response_dict

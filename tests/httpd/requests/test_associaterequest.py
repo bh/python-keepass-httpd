@@ -23,8 +23,7 @@ def test_associaterequest_successfull(mock_qyn, mock_rawinput, mock_create_confi
     test_server = TestServer()
     request = requests.AssociateRequest(test_server)
 
-    expected_response_dict = {'Success': True, 'Id': test_client_name,
-                              'Key': 'Some 64 encoded key'}
+    expected_response_dict = {'Success': True, 'Id': test_client_name}
     assert request.get_response(test_dict) == expected_response_dict
     mock_create_config_key.assert_called_once_with(test_client_name,
                                                    'Some 64 encoded key')
@@ -38,6 +37,5 @@ def test_associaterequest_no_accept(mock_qyn):
     test_server = TestServer()
     request = requests.AssociateRequest(test_server)
 
-    expected_response_dict = {'Success': False,
-                              "Key": "Some 64 encoded key"}
+    expected_response_dict = {'Success': False}
     assert request.get_response(test_dict) == expected_response_dict
