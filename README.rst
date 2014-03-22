@@ -36,9 +36,9 @@ The output should be look like this:
 ::
 
     Usage:
-      ./python-keepass-httpd.py run <database_path> [options]
-      ./python-keepass-httpd.py (-h | --help)
-      ./python-keepass-httpd.py --version
+      python-keepass-httpd.py run <database_path> [options]
+      python-keepass-httpd.py (-h | --help)
+      python-keepass-httpd.py --version
 
     Options:
       --help                    Show this screen.

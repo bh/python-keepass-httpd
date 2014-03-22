@@ -1,20 +1,23 @@
+PIP=pip
+RUN_TESTS=py.test --cov=keepass_http --cov-report=term-missing
+
 build_dev_env:
-	pip install -e .
-	pip install -r requirements/devel.txt
+	$(PIP) install -e .
+	$(PIP) install -r requirements/devel.txt
 	
 build_test_env:
-	pip install -e .
-	pip install -r requirements/testing.txt
+	$(PIP) install -e .
+	$(PIP) install -r requirements/testing.txt
 	
 run_tests:
-	py.test --cov=keepass_http --cov-report=term-missing
+	$(RUN_TESTS)
 	
 dev_run_tests_verbose:
-	py.test --cov=keepass_http --cov-report=term-missing --capture=no
+	$(RUN_TESTS) --capture=no
 	
-dev_test:	dev_build_env	run_tests
+dev_test: build_dev_env run_tests
 	
-test:	build_test_env	run_tests
+test: build_test_env run_tests
 	
 show_html_coverage:	dev_test
 	rm -rf coverage_html_report/
@@ -24,16 +27,16 @@ show_html_coverage:	dev_test
 style:
 	@echo "Autopep8..."
 	autopep8 --aggressive --max-line-length=100 --indent-size=4 \
-		 --in-place -r tests/* keepass_http/*
+		 --in-place -r src/*
 	@echo "Formatting python imports..."
-	isort -rc .	
+	isort -l 100 -rc .	
 	@echo "Pyflakes..."
 	find . -name "*.py" -exec pyflakes {} \;
 	
 clean:
-	-find . -name __pycache__ -type d -exec rm -rf {} \;
-	-find . -name "*.pyc" -delete
-	-rm -rf dist/ build/
+	-find . -name __pycache__ -type d -exec rm -rf {} \; > /dev/null || true
+	-find . -name "*.pyc" -delete > /dev/null || true
+	-rm -rf dist/ build/ src/*.egg-info> /dev/null || true
 	
 publish_release:
 	python setup.py sdist --formats=bztar,zip,gztar upload
