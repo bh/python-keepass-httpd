@@ -1,7 +1,8 @@
 import os
 import shutil
 
-from keepass_http.backends import EntrySpec, KeePassHTTPBackend
+from keepass_http.backends import EntrySpec
+from keepass_http.backends.python_keepass_backend import Backend
 
 TEST_DATA_ROOT = os.path.join(os.path.normpath(os.path.dirname(__file__)), "test_data")
 
@@ -15,7 +16,7 @@ def _move_test_file_to_tmpdir(_tmpdir, file_name):
 def test_fetch_entries_empty_database(tmpdir):
     test_database = _move_test_file_to_tmpdir(tmpdir, "empty.kdb")
 
-    backend = KeePassHTTPBackend(test_database, "abcd123")
+    backend = Backend(test_database, "abcd123")
     backend.sync_entries()
     assert len(backend.entries.items) == 0
 
@@ -23,7 +24,7 @@ def test_fetch_entries_empty_database(tmpdir):
 def test_create_config(tmpdir):
     test_database = _move_test_file_to_tmpdir(tmpdir, "test_create_config.kdb")
 
-    backend = KeePassHTTPBackend(test_database, "abcd123")
+    backend = Backend(test_database, "abcd123")
     backend.sync_entries()
     assert len(backend.entries.items) == 0
 
@@ -38,7 +39,7 @@ def test_create_config(tmpdir):
 
 def test_get_config(tmpdir):
     test_database = _move_test_file_to_tmpdir(tmpdir, "test_get_config.kdb")
-    backend = KeePassHTTPBackend(test_database, "abcd123")
+    backend = Backend(test_database, "abcd123")
 
     # existing associated client
     assert backend.get_config("test_name") == "test_key"
@@ -52,7 +53,7 @@ def test_create_login(tmpdir):
 
     test_databse_passphrase = "abcd123"
 
-    x = KeePassHTTPBackend(test_database, test_databse_passphrase)
+    x = Backend(test_database, test_databse_passphrase)
 
     x.sync_entries()
     assert len(x.entries.items) == 1
@@ -96,7 +97,7 @@ def test_create_login(tmpdir):
 def test_get_search_entries(tmpdir):
     test_database = _move_test_file_to_tmpdir(tmpdir, "test_search_for_entries.kdb")
 
-    backend = KeePassHTTPBackend(test_database, "abcd123")
+    backend = Backend(test_database, "abcd123")
     backend.sync_entries()
     assert len(backend.entries.items) == 5
 
