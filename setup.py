@@ -27,6 +27,7 @@ setup(name="keepass_http",
           ],
           'keepass_http_backends': [
              'application/x-keepass-database-v1 = keepass_http.backends.python_keepass_backend:Backend',
+             'application/x-keepass-database-v2 = keepass_http.backends.libkeepass_backend:Backend'
           ],
     },
     zip_safe=False
