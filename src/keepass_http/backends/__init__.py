@@ -1,5 +1,6 @@
 import abc
 import mimetypes
+import pkg_resources
 
 from urlparse import urlparse
 
@@ -166,8 +167,12 @@ class KeePassHTTPBackend(Backend):
 def get_backend_by_file(filepath):
     mimetype = mimetypes.guess_type(filepath)[0]
 
-    for backend in Backend.__subclasses__():
-        if backend.for_mimetype == mimetype:
-            return backend
+    if mimetype is None:
+        raise NoBackendError("No backend for file: %s" % filepath)
 
-    raise NoBackendError("No backend for file: %s" % filepath)
+    backends = list(pkg_resources.iter_entry_points(group='keepass_http_backends', name=mimetype))
+
+    if not len(backends):
+        raise NoBackendError("No backend for file: %s" % filepath)
+
+    return backends.pop().load()

@@ -25,6 +25,9 @@ setup(name="keepass_http",
           'console_scripts': [
               'python-keepass-httpd = keepass_http.scripts.python_keepass_httpd:main'
           ],
+          'keepass_http_backends': [
+             'application/x-keepass-database-v1 = keepass_http.backends.python_keepass_backend:Backend',
+          ],
     },
     zip_safe=False
 )
