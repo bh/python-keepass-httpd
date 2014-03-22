@@ -21,13 +21,12 @@ import os
 import sys
 
 import daemon
-import docopt
-from lockfile import pidlockfile
 
+import docopt
 from keepass_http import backends
-from keepass_http.httpd.server import (KeepassHTTPRequestHandler,
-                                       KeepassHTTPServer)
+from keepass_http.httpd.server import KeepassHTTPRequestHandler, KeepassHTTPServer
 from keepass_http.utils import ConfDir, query_yes_no
+from lockfile import pidlockfile
 
 #import setproctitle
 
@@ -67,7 +66,9 @@ def main():
     max_try_count = 3
     success = False
     while try_count <= max_try_count:
-        passphrase = getpass.getpass("Please enter the passphrase for database %s: \n" % database_path)
+        passphrase = getpass.getpass(
+            "Please enter the passphrase for database %s: \n" %
+            database_path)
         try:
             backend = backend_class(database_path, passphrase)
         except backends.WrongPassword:

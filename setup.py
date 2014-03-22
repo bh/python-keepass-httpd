@@ -11,14 +11,20 @@ setup(name="keepass_http",
       author_email="kiwisauce@pagenotfound.de",
       url="https://github.com/bhedrich/python-keepass-httpd/",
       package_dir={"": "src"},
-      packages=find_packages("src/", exclude="tests"),
-      scripts=["bin/python-keepass-httpd"],
+      packages=find_packages("src/"),
       include_package_data=True,
       install_requires=("pycrypto==2.6.1",
                         "keepass==1.1",
                         "wsgiref==0.1.2",
                         "python-daemon==1.6",
                         "docopt==0.6.1",
-                        "setproctitle==1.1.8"),
-      zip_safe=False,
+                        "setproctitle==1.1.8",
+                        "libkeepass==0.1.2",
+                        "lxml==3.2.1"),
+      entry_points={
+          'console_scripts': [
+              'python-keepass-httpd = keepass_http.scripts.python_keepass_httpd:main'
+          ],
+    },
+    zip_safe=False
 )
