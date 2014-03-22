@@ -62,3 +62,9 @@ The server was started. Now we have to setup ChromeIPass.
 Setting up `ChromeIPass <https://chrome.google.com/webstore/detail/chromeipass/ompiailgknfdndiefoaoiligalphfdae>`_
 ------------------------------------------------------------------------------------------------------------------
 
+
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/bhedrich/python-keepass-httpd/trend.png
+   :alt: Bitdeli badge
+   :target: https://bitdeli.com/free
+
