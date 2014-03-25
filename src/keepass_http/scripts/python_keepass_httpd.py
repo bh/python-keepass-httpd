@@ -20,15 +20,12 @@ import logging
 import os
 import sys
 
-import daemon
+import daemonize
 
 import docopt
 from keepass_http import backends
 from keepass_http.httpd.server import KeepassHTTPRequestHandler, KeepassHTTPServer
-from keepass_http.utils import ConfDir, query_yes_no
-from lockfile import pidlockfile
-
-#import setproctitle
+from keepass_http.utils import ConfDir
 
 
 def main():
@@ -45,14 +42,6 @@ def main():
     kpconf = ConfDir()
     kpconf.initialize_logging(loglevel)
     log = logging.getLogger("keepass_http_script")
-
-    pid_file = pidlockfile.PIDLockFile(os.path.join(kpconf.confdir, "process.pid"))
-
-    if pid_file.is_locked():
-        if query_yes_no("It looks like another instance of python-keepass-http is currently running. "
-                        "Do you want to overwrite the pid file?", default="yes"):
-            existing_pid = pid_file.read_pid()
-            pid_file.break_lock()
 
     # server
     server = KeepassHTTPServer((host, int(port)), KeepassHTTPRequestHandler)
@@ -84,15 +73,14 @@ def main():
     server.set_backend(backend)
     log.debug("Use Keepass Backend: %s" % backend.__class__.__name__)
 
-    # config daemon context
-    files_to_preserve = kpconf.get_logging_handler_streams() + [server.fileno()]
-    daemon_context = daemon.DaemonContext(detach_process=is_daemon,
-                                          files_preserve=files_to_preserve,
-                                          pidfile=pid_file)
-
-    with daemon_context:
-        if is_daemon:
-            log.info("Process forked to background - PID: %s" % os.getpid())
+    # config daemon
+    if is_daemon:
+        pid_file = os.path.join(kpconf.confdir, "process.pid")
+        files_to_preserve = kpconf.get_logging_handler_streams() + [server.fileno()]
+        daemon = daemonize.Daemonize(app="Keepass HTTPD server", pid=pid_file,
+                                     action=server.serve_forever, keep_fds=files_to_preserve)
+        daemon.start()
+    else:
         server.serve_forever()
 
 if __name__ == '__main__':
