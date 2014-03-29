@@ -10,8 +10,8 @@ log = logging.getLogger(__name__)
 class KeepassHTTPServer(SocketServer.ThreadingTCPServer):
     allow_reuse_address = True
 
-    def __init__(self, *args, **kwargs):
-        SocketServer.ThreadingTCPServer.__init__(self, *args, **kwargs)
+    def __init__(self, host, port):
+        SocketServer.ThreadingTCPServer.__init__(self, (host, port), KeepassHTTPRequestHandler)
         self._is_daemon = None
         self.backend = None
 

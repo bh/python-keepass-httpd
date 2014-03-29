@@ -24,8 +24,8 @@ import daemonize
 
 import docopt
 from keepass_http import backends
-from keepass_http.httpd.server import KeepassHTTPRequestHandler, KeepassHTTPServer
 from keepass_http.utils import ConfDir
+from keepass_http.httpd.server import KeepassHTTPServer
 
 
 def main():
@@ -44,7 +44,7 @@ def main():
     log = logging.getLogger("keepass_http_script")
 
     # server
-    server = KeepassHTTPServer((host, int(port)), KeepassHTTPRequestHandler)
+    server = KeepassHTTPServer(host, int(port))
     server.set_is_daemon(is_daemon)
     log.info("Server started on %s:%s" % (host, port))
 
