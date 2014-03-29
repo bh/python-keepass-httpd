@@ -1,6 +1,6 @@
 import abc
-import logging
 
+from keepass_http.core import logging
 from keepass_http.crypto import AESEncryption
 from keepass_http.utils import query_yes_no
 

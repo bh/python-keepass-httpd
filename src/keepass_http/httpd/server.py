@@ -1,7 +1,7 @@
 import json
-import logging
 import SocketServer
 
+from keepass_http.core import logging
 from keepass_http.httpd import requests
 
 log = logging.getLogger(__name__)
@@ -10,12 +10,13 @@ log = logging.getLogger(__name__)
 class KeepassHTTPServer(SocketServer.ThreadingTCPServer):
     allow_reuse_address = True
 
-    def __init__(self, *args, **kwargs):
-        SocketServer.ThreadingTCPServer.__init__(self, *args, **kwargs)
+    def __init__(self, host, port):
+        SocketServer.ThreadingTCPServer.__init__(self, (host, port), KeepassHTTPRequestHandler)
         self._is_daemon = None
         self.backend = None
 
     def set_backend(self, backend):
+        log.debug("Using Keepass Backend: %s" % backend.__module__)
         self.backend = backend
 
     def set_is_daemon(self, is_daemon):

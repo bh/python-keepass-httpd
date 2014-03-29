@@ -1,7 +1,6 @@
 import errno
-import logging.config
+import logging
 import os
-import shutil
 import sys
 
 import pkg_resources
@@ -58,60 +57,23 @@ def mkdir_p(path):
             raise  # pragma: no cover
 
 
-class ConfDir(object):
-    logging_initialzed = False
+def set_loglevel(level):
+    """
+    Set the loglevel for all registered logging handlers.
 
-    def __init__(self):
-        if is_pytest_running():
-            import tempfile
-            self.confdir = tempfile.mkdtemp()
-        else:
-            self.confdir = os.path.expanduser("~/.python-keepass-httpd")  # pragma: no cover
-        self.logdir = os.path.join(self.confdir, "log")
-        mkdir_p(self.confdir)
-        mkdir_p(self.logdir)
+    """
+    for handler in logging._handlerList:
+        handler = handler()
+        handler.setLevel(level)
 
-    def initialize_logging(self, level=None):
-        if not ConfDir.logging_initialzed:
 
-            logging_conf = os.path.join(self.confdir, "logging.conf")
-            ConfDir.logging_initialzed = True
+def get_logging_handler_streams():
+    """
+    Return all open file handlers for logging stream loggers.
+    This is used to avoid closing open file handlers while detaching to background.
 
-            # create basic logging config
-            if not os.path.exists(logging_conf):
-                logging_template = get_absolute_path_to_resource("conf/logging.conf")
-                shutil.copy(logging_template, logging_conf)
-
-            logging.config.fileConfig(logging_conf, disable_existing_loggers=True,
-                                      defaults={"LOGGING_DIR": self.logdir})
-
-            if level:
-                self.set_loglevel(level)
-
-            log = logging.getLogger(__name__)
-            log.debug("Logging conf read from: %s" % logging_conf)
-
-            if level:
-                log.debug("Set loglevel to: %s" % level)
-
-    @staticmethod
-    def set_loglevel(level):
-        """
-        Set the loglevel for all registered logging handlers.
-
-        """
-        for handler in logging._handlerList:
-            handler = handler()
-            handler.setLevel(level)
-
-    @staticmethod
-    def get_logging_handler_streams():
-        """
-        Return all open file handlers for logging stream loggers.
-        This is used to avoid closing open file handlers while detaching to background.
-
-        """
-        filenos = []
-        for handler in logging._handlerList:
-            filenos.append(handler().stream.fileno())
-        return filenos
+    """
+    filenos = []
+    for handler in logging._handlerList:
+        filenos.append(handler().stream.fileno())
+    return filenos

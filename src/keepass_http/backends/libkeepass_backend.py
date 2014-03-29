@@ -2,9 +2,9 @@ import base64
 import uuid
 from urlparse import urlparse
 
+import libkeepass
 from lxml import etree, objectify
 
-import libkeepass
 from keepass_http.backends import BaseBackend, EntrySpec, WrongPassword
 
 

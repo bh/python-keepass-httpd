@@ -1,6 +1,7 @@
 from urlparse import urlparse
 
 from keepass import kpdb
+
 from keepass_http.backends import EntrySpec
 
 from . import BaseBackend, WrongPassword
