@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 """
 Usage:
-  python-keepass-httpd.py run <database_path> [options]
-  python-keepass-httpd.py (-h | --help)
-  python-keepass-httpd.py --version
+  python-keepass-httpd run <database_path> [options]
+  python-keepass-httpd (-h | --help)
+  python-keepass-httpd --version
 
 Options:
   --help                    Show this screen.
@@ -16,16 +16,19 @@ Options:
 """
 
 import getpass
-import logging
 import os
 import sys
 
 import daemonize
-
 import docopt
+
 from keepass_http import backends
-from keepass_http.utils import ConfDir
+from keepass_http.core import kpconf, logging
 from keepass_http.httpd.server import KeepassHTTPServer
+from keepass_http.utils import get_logging_handler_streams, set_loglevel
+
+APP_NAME = "keepass_http_script"
+log = logging.getLogger(APP_NAME)
 
 
 def main():
@@ -36,18 +39,13 @@ def main():
     host = arguments["--host"]
     port = arguments["--port"]
     assert port.isdigit()
-    loglevel = arguments["--loglevel"]
 
     # basic config
-    kpconf = ConfDir()
-    kpconf.initialize_logging(loglevel)
-    log = logging.getLogger("keepass_http_script")
+    set_loglevel(arguments["--loglevel"])
 
     # server
     server = KeepassHTTPServer(host, int(port))
     server.set_is_daemon(is_daemon)
-    log.info("Server started on %s:%s" % (host, port))
-
     # backend
     backend_class = backends.get_backend_by_file(database_path)
 
@@ -61,26 +59,32 @@ def main():
         try:
             backend = backend_class(database_path, passphrase)
         except backends.WrongPassword:
-            print "Wrong password, please try again."
+            log.info(
+                "Wrong passphrase, please try again. (attempt [%s/%s]" %
+                (try_count, max_try_count))
             try_count += 1
         else:
             success = True
+            log.info("Passphrase accepted")
             break
 
     if success is False:
-        sys.exit("Wrong password after %d attempts" % max_try_count)
+        sys.exit("Wrong passphrase after %d attempts" % max_try_count)
 
     server.set_backend(backend)
-    log.debug("Use Keepass Backend: %s" % backend.__class__.__name__)
 
     # config daemon
     if is_daemon:
         pid_file = os.path.join(kpconf.confdir, "process.pid")
-        files_to_preserve = kpconf.get_logging_handler_streams() + [server.fileno()]
-        daemon = daemonize.Daemonize(app="Keepass HTTPD server", pid=pid_file,
-                                     action=server.serve_forever, keep_fds=files_to_preserve)
+        log.info("Server started as daemon on %s:%s" % (host, port))
+        daemon = daemonize.Daemonize(app=APP_NAME,
+                                     pid=pid_file,
+                                     action=server.serve_forever,
+                                     keep_fds=get_logging_handler_streams() + [server.fileno()])
+        daemon.logger = log
         daemon.start()
     else:
+        log.info("Server started on %s:%s" % (host, port))
         server.serve_forever()
 
 if __name__ == '__main__':
