@@ -111,4 +111,7 @@ class ConfDir(object):
         This is used to avoid closing open file handlers while detaching to background.
 
         """
-        return [handler().stream for handler in logging._handlerList]
+        filenos = []
+        for handler in logging._handlerList:
+            filenos.append(handler().stream.fileno())
+        return filenos
