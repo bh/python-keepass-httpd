@@ -47,6 +47,7 @@ class KeepassHTTPRequestHandler(SocketServer.BaseRequestHandler):
 
     def handle_request(self, request_dict):
         request_type = request_dict["RequestType"]
+        log.info("Got request: %s" % request_type)
 
         if request_type == "test-associate":
             request = requests.TestAssociateRequest(self.server)
@@ -65,4 +66,6 @@ class KeepassHTTPRequestHandler(SocketServer.BaseRequestHandler):
                 "Request type %s is not yet implemented" %
                 request_dict["RequestType"])
 
-        return request.get_response(request_dict)
+        response = request.get_response(request_dict)
+        log.info("Success is %s" % response.get("Success", "???"))
+        return response

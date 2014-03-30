@@ -26,7 +26,6 @@ class Request:
     def __init__(self, server):
         self.server = server
         self._kpc = None
-        log.info("Got request: %s" % self.__class__.__name__)
 
     @abc.abstractmethod
     def get_response(self, request_dict):
@@ -100,6 +99,8 @@ class AssociateRequest(Request):
             self.server.backend.create_config_key(client_name, request_dict["Key"])
             response_dict['Id'] = client_name
             response_dict['Success'] = True
+            response_dict['Nonce'] = request_dict['Nonce']
+            response_dict['Verifier'] = request_dict['Verifier']
 
         return response_dict
 
