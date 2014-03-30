@@ -38,6 +38,9 @@ clean:
 	-find . -name "*.pyc" -delete > /dev/null || true
 	-rm -rf dist/ build/ src/*.egg-info> /dev/null || true
 	
+bumpversion:
+	bumpversion part --new-version $(VERSION)
+	
 publish_release:
 	python setup.py sdist --formats=bztar,zip,gztar upload
 	python setup.py bdist_wheel upload
