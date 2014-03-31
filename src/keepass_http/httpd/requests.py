@@ -1,7 +1,7 @@
 import abc
 
 from keepass_http.core import logging
-from keepass_http.crypto import AESEncryption
+from keepass_http.crypto import AESCipher
 from keepass_http.utils import query_yes_no
 
 log = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ class Request:
         nonce = request_dict['Nonce']
         verifier = request_dict['Verifier']
 
-        kpc = AESEncryption(key, nonce)
+        kpc = AESCipher(key, nonce)
 
         # wrong saved key in database -> force associate
         if not kpc.is_valid(nonce, verifier):

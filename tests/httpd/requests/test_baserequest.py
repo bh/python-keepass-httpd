@@ -64,7 +64,7 @@ def test_baserequest_authenticate_broken_request_dict_2(mock_get_config):
                               "Nonce": "some nonce"})
 
 
-@mock.patch("keepass_http.httpd.requests.AESEncryption")
+@mock.patch("keepass_http.httpd.requests.AESCipher")
 @mock.patch.object(TestBackend, "get_config")
 def test_baserequest_authenticate_with_kpc_invalid(mock_get_config, mock_kpc):
     mock_get_config.return_value = "known key"
@@ -85,7 +85,7 @@ def test_baserequest_authenticate_with_kpc_invalid(mock_get_config, mock_kpc):
         request.authenticate(request_dict)
 
 
-@mock.patch("keepass_http.httpd.requests.AESEncryption")
+@mock.patch("keepass_http.httpd.requests.AESCipher")
 @mock.patch.object(TestBackend, "get_config")
 def test_baserequest_authenticate_with_kpc_valid(mock_get_config, mock_kpc):
     mock_get_config.return_value = "known key"
@@ -105,7 +105,7 @@ def test_baserequest_authenticate_with_kpc_valid(mock_get_config, mock_kpc):
     request.authenticate(request_dict)
 
 
-@mock.patch("keepass_http.httpd.requests.AESEncryption")
+@mock.patch("keepass_http.httpd.requests.AESCipher")
 @mock.patch.object(TestBackend, "get_config")
 def test_baserequest_authenticate_with_kpc_get_kpc_authenticated(mock_get_config, mock_kpc):
     mock_get_config.return_value = "known key"
