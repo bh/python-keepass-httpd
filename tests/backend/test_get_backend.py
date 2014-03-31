@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 import pytest
 
 from keepass_http.backends import (get_backend_by_file, libkeepass_backend, NoBackendError,

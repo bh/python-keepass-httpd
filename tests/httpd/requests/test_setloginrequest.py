@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import mock
 
 from keepass_http.httpd import requests

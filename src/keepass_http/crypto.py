@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import base64
+
 from libkeepass import crypto as libkeepass_crypto
 
 

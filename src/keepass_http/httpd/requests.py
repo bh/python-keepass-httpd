@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import abc
 
 from keepass_http.core import logging

@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 import SocketServer
 
 import mock
 
 from keepass_http.httpd.server import KeepassHTTPServer
+
 
 class FakeBackend(mock.Mock):
     pass
