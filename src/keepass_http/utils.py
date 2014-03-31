@@ -58,16 +58,6 @@ def mkdir_p(path):
             raise  # pragma: no cover
 
 
-def set_loglevel(level):
-    """
-    Set the loglevel for all registered logging handlers.
-
-    """
-    for handler in logging._handlerList:
-        handler = handler()
-        handler.setLevel(level)
-
-
 def get_logging_handler_streams():
     """
     Return all open file handlers for logging stream loggers.

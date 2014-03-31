@@ -95,6 +95,7 @@ class AssociateRequest(Request):
         response_dict = {}
         response_dict['Success'] = False
 
+
         if query_yes_no("Should be the client accepted?", default="no"):
             client_name = raw_input("Give the client a name: ")
             self.server.backend.create_config_key(client_name, request_dict["Key"])
