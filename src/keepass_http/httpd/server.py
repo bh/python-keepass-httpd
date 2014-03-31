@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+
 import SocketServer
 
 from keepass_http.core import logging
