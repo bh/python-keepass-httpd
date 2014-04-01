@@ -58,16 +58,6 @@ def mkdir_p(path):
             raise  # pragma: no cover
 
 
-def set_loglevel(level):
-    """
-    Set the loglevel for all registered logging handlers.
-
-    """
-    for handler in logging._handlerList:
-        handler = handler()
-        handler.setLevel(level)
-
-
 def get_logging_handler_streams():
     """
     Return all open file handlers for logging stream loggers.
@@ -78,3 +68,19 @@ def get_logging_handler_streams():
     for handler in logging._handlerList:
         filenos.append(handler().stream.fileno())
     return filenos
+
+
+class Singleton(object):
+    """
+    Borg pattern
+
+    """
+    _we_are_one = {}
+
+    def __new__(cls, *args, **kwargs):
+        self = super(Singleton, cls).__new__(cls, *args, **kwargs)
+        self.__dict__ = cls._we_are_one
+        return self
+
+    def __repr__(self):
+        return repr(self.__class__._we_are_one)

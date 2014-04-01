@@ -24,9 +24,9 @@ import daemonize
 import docopt
 
 from keepass_http import backends
-from keepass_http.core import kpconf, logging
+from keepass_http.core import Conf, logging
 from keepass_http.httpd.server import KeepassHTTPServer
-from keepass_http.utils import get_logging_handler_streams, set_loglevel
+from keepass_http.utils import get_logging_handler_streams
 
 APP_NAME = "keepass_http_script"
 log = logging.getLogger(APP_NAME)
@@ -42,7 +42,8 @@ def main():
     assert port.isdigit()
 
     # basic config
-    set_loglevel(arguments["--loglevel"])
+    kpconf = Conf()
+    kpconf.set_loglevel(arguments["--loglevel"])
 
     # server
     server = KeepassHTTPServer(host, int(port))
