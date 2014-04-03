@@ -58,12 +58,6 @@ class Request:
             raise NotAuthenticated()
         return self._kpc
 
-    def cleanup_request_dict(self, request_dict):
-        """
-        """
-        # Todo: implement
-        raise NotImplementedError
-
 
 class TestAssociateRequest(Request):
 
