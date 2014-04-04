@@ -16,6 +16,10 @@ class TestServer(mock.Mock):
 class TestAES(mock.Mock):
     pass
 
+class TestKPC(mock.Mock):
+    decrypt = mock.Mock(return_value=None)
+    encrypt = mock.Mock()
+
 
 class ImplementedRequest(requests.Request):
 
@@ -139,3 +143,33 @@ def test_baserequest_authenticate_with_kpc_get_kpc_not_authenticated(mock_get_co
     request = ImplementedRequest(test_server)
     with pytest.raises(requests.NotAuthenticated):
         request.get_kpc()
+
+@mock.patch("keepass_http.httpd.requests.AESCipher")
+@mock.patch.object(TestBackend, "get_config")
+def test_baserequest_set_verifier_with_valid_key(mock_get_config, mock_kpc):
+    mock_get_config.return_value = "known key"
+    test_server = TestServer()
+
+    aes = TestAES()
+    mock_kpc.return_value = aes
+
+    request = ImplementedRequest(test_server)
+
+    response_dict = {}
+    request.set_verifier(response_dict, "some client")
+
+    assert response_dict['Nonce'] != None
+    assert response_dict['Verifier'] != None
+
+@mock.patch.object(TestBackend, "get_config")
+def test_baserequest_set_verifier_with_invalid_key(mock_get_config):
+    mock_get_config.return_value = None
+    test_server = TestServer()
+
+    aes = TestAES()
+    aes._kpc = mock.Mock(return_value=None)
+
+    request = ImplementedRequest(test_server)
+    response_dict = {}
+    with pytest.raises(requests.AuthenticationError):
+	request.set_verifier(response_dict, "nomatterwhat")

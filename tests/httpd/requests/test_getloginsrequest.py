@@ -35,13 +35,17 @@ def test_getloginsrequest_no_entries(mock_authenticate, mock_get_kpc, mock_searc
     assert request.get_response(test_dict) == {'Success': True, 'Entries': []}
 
 
+@mock.patch.object(requests.Request, "set_verifier")
 @mock.patch.object(TestBackend, "search_entries")
 @mock.patch.object(requests.Request, "get_kpc")
+@mock.patch.object(requests.Request, "get_response_kpc")
 @mock.patch.object(requests.Request, "authenticate")
-def test_associaterequest_with_entries(mock_authenticate, mock_get_kpc, mock_search_entries):
+def test_associaterequest_with_entries(mock_authenticate, mock_get_response_kpc, mock_get_kpc, mock_search_entries, mock_set_verifier):
     mock_authenticate.return_value = None
+
     kpc = TestKPC()
     mock_get_kpc.return_value = kpc
+    mock_get_response_kpc.return_value = kpc
     mock_search_entries.return_value = [EntrySpec(uuid="1", title="Login To Google",
                                                   login="spam.eggs@gmail.com", password="1234",
                                                   url="http://www.google.de/login/form.html")]
