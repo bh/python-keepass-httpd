@@ -6,6 +6,19 @@ import sys
 
 import pkg_resources
 
+
+def has_gui_support():
+    """
+    If this fails your Python may not be configured for Tk
+
+    """
+    try:
+        import Tkinter
+    except ImportError:
+        return False
+    else:
+        return True
+
 # http://stackoverflow.com/a/3041990
 
 

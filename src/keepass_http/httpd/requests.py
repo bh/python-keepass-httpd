@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import abc
 
-from keepass_http.core import logging
+from keepass_http.core import Conf, logging
 from keepass_http.crypto import AESCipher
-from keepass_http.utils import query_yes_no
 
 log = logging.getLogger(__name__)
 
@@ -89,11 +88,11 @@ class AssociateRequest(Request):
         response_dict = {}
         response_dict['Success'] = False
 
-
-        if query_yes_no("Should be the client accepted?", default="no"):
-            client_name = raw_input("Give the client a name: ")
-            self.server.backend.create_config_key(client_name, request_dict["Key"])
-            response_dict['Id'] = client_name
+        kpconf = Conf()
+        new_client_name = kpconf.get_selected_ui().RequireAssociationDecision.require_client_name()
+        if new_client_name:
+            self.server.backend.create_config_key(new_client_name, request_dict["Key"])
+            response_dict['Id'] = new_client_name
             response_dict['Success'] = True
             response_dict['Nonce'] = request_dict['Nonce']
             response_dict['Verifier'] = request_dict['Verifier']

@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
+import importlib
 import logging.config
 import mimetypes
 import os.path
 import tempfile
 
+import enum
+
 from keepass_http.utils import get_absolute_path_to_resource, is_pytest_running, mkdir_p, Singleton
 
 
 class Conf(Singleton):
+
+    class UI(enum.Enum):
+        GUI = "gui"
+        CLI = "cli"
 
     def __init__(self):
         self.configure_paths()
@@ -33,6 +40,17 @@ class Conf(Singleton):
         self.logdir = os.path.join(self.confdir, "log")
         mkdir_p(self.confdir)
         mkdir_p(self.logdir)
+
+    def select_ui(self, ui):
+        self.ui = ui
+
+    def get_selected_ui(self):
+        # TODO: too complex code to do this :S
+        try:
+            self.ui
+        except AttributeError:
+            self.ui = Conf.UI.CLI
+        return importlib.import_module("keepass_http.ui.%s" % self.ui.value)
 
     @staticmethod
     def set_loglevel(level):
