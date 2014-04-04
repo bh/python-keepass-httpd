@@ -62,6 +62,9 @@ class KeepassHTTPRequestHandler(SocketServer.BaseRequestHandler):
         elif request_type == "set-login":
             request = requests.SetLoginRequest(self.server)
 
+        elif request_type == "get-logins-count":
+            request = requests.GetLoginsCountRequest(self.server)
+
         else:
             raise NotImplementedError(
                 "Request type %s is not yet implemented" %
