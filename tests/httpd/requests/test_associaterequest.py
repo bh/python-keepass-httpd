@@ -2,6 +2,7 @@
 import mock
 
 from keepass_http.httpd import requests
+from keepass_http.ui.cli import RequireAssociationDecision
 
 
 class TestBackend(mock.Mock):
@@ -13,12 +14,10 @@ class TestServer(mock.Mock):
 
 
 @mock.patch.object(TestBackend, "create_config_key")
-@mock.patch('__builtin__.raw_input')
-@mock.patch('keepass_http.httpd.requests.query_yes_no')
-def test_associaterequest_successfull(mock_qyn, mock_rawinput, mock_create_config_key):
+@mock.patch.object(RequireAssociationDecision, "require_client_name")
+def test_associaterequest_successfull(mock_require_client_name, mock_create_config_key):
     test_client_name = "test client name"
-    mock_qyn.return_value = True
-    mock_rawinput.return_value = test_client_name
+    mock_require_client_name.return_value = test_client_name
 
     test_dict = {"Key": "Some 64 encoded key",
                  'Nonce': "asd", "Verifier": "ssa"}
@@ -32,9 +31,9 @@ def test_associaterequest_successfull(mock_qyn, mock_rawinput, mock_create_confi
                                                    'Some 64 encoded key')
 
 
-@mock.patch('keepass_http.httpd.requests.query_yes_no')
-def test_associaterequest_no_accept(mock_qyn):
-    mock_qyn.return_value = False
+@mock.patch.object(RequireAssociationDecision, "require_client_name")
+def test_associaterequest_no_accept(mock_require_client_name):
+    mock_require_client_name.return_value = None
 
     test_dict = {"Key": "Some 64 encoded key"}
     test_server = TestServer()

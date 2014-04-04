@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from setuptools import find_packages, setup
 
 with open("README.rst") as readme_file:
@@ -19,7 +20,8 @@ setup(name="keepass_http",
                         "docopt==0.6.1",
                         "setproctitle==1.1.8",
                         "libkeepass==0.1.2",
-                        "lxml==3.2.1"),
+                        "lxml==3.2.1",
+                        "enum34==0.9.23"),
       entry_points={
           'console_scripts': [
               'python-keepass-httpd = keepass_http.scripts.python_keepass_httpd:main'
@@ -28,6 +30,6 @@ setup(name="keepass_http",
              'application/x-keepass-database-v1 = keepass_http.backends.python_keepass_backend:Backend',
              'application/x-keepass-database-v2 = keepass_http.backends.libkeepass_backend:Backend'
           ],
-    },
-    zip_safe=False
+      },
+      zip_safe=False
 )

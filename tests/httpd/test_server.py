@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import mock
 import SocketServer
+
+import mock
 
 from keepass_http.httpd.server import KeepassHTTPServer
 
