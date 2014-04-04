@@ -47,6 +47,7 @@ The output should be look like this:
       -p --port PORT            Specify a port [default: 19455]
       -h --host HOST            Specify a host [default: 127.0.0.1]
       -l --loglevel LOGLEVEL    Loglevel to use [default: INFO]
+      --gui                     Use TKinter for a graphical interface
 
 
 Starting the server
