@@ -21,16 +21,20 @@ def test_unicode_characters_correctly_read(tmpdir):
     backend.sync_entries()
 
     the_login = u'blaf\xf1oo'
-    the_url = u'unicodeinurl\xdf\xf6\xe4\\x\xf1nasdf'
-    # keepassx currently doesn't support unicode in password field - https://www.keepassx.org/dev/issues/158
-    the_password = u'blanblan'
+    the_url = u'http://www.unicodeinurl\xf1.com'
+    # keepassx currently doesn't support unicode in password field -
+    # https://www.keepassx.org/dev/issues/158
+    the_password = 'blanblan'
     the_title = u'Unicode fu\xf1'
+    the_uuid = ''
+
+    backend.entries.items[0].uuid = ''
 
     assert backend.entries.items[0] == EntrySpec(login=the_login,
-                                                    url=the_url,
-                                                    password=the_password,
-                                                    title=the_title,
-                                                    uuid="")
+                                                 url=the_url,
+                                                 password=the_password,
+                                                 title=the_title,
+                                                 uuid=the_uuid)
 
 
 def test_fetch_entries_empty_database(tmpdir):
@@ -78,12 +82,12 @@ def test_create_login(tmpdir):
     x.sync_entries()
     assert len(x.entries.items) == 1
     # valid logins
-    x.create_login("test_name", "bla@gmail.com", "geheim", "https://www.google.com/login")
+    x.create_login("test_name", "bla@gmail.com", "geheim", u"https://www.google.com/login")
     # 2 accounts, same domain
-    x.create_login("test_name", "blubb@gmx.net", "geheim2", "https://gmx.net/login")
-    x.create_login("test_name", "blubb2@gmx.net", "geheim3", "https://gmx.net/login")
+    x.create_login("test_name", "blubb@gmx.net", "geheim2", u"https://gmx.net/login")
+    x.create_login("test_name", "blubb2@gmx.net", "geheim3", u"https://gmx.net/login")
     # another login
-    x.create_login("test_name", "asdasd@web.de", "geheim4", "http://web.de/login/form.php")
+    x.create_login("test_name", "asdasd@web.de", "geheim4", u"http://web.de/login/form.php")
     # x.get_entries(purge_cache=True)
 
     assert len(x.entries.items) == 5
@@ -95,22 +99,22 @@ def test_create_login(tmpdir):
     assert x.entries.items[0] == EntrySpec(login="bla@gmail.com",
                                            url='https://www.google.com/login',
                                            password='geheim',
-                                           title="www.google.com",
+                                           title=u"www.google.com",
                                            uuid="")
     assert x.entries.items[1] == EntrySpec(login="blubb@gmx.net",
                                            url='https://gmx.net/login',
                                            password='geheim2',
-                                           title="gmx.net",
+                                           title=u"gmx.net",
                                            uuid="")
     assert x.entries.items[2] == EntrySpec(login="blubb2@gmx.net",
                                            url='https://gmx.net/login',
                                            password='geheim3',
-                                           title="gmx.net",
+                                           title=u"gmx.net",
                                            uuid="")
     assert x.entries.items[3] == EntrySpec(login="asdasd@web.de",
                                            url='http://web.de/login/form.php',
                                            password='geheim4',
-                                           title="web.de",
+                                           title=u"web.de",
                                            uuid="")
 
 

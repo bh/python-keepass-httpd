@@ -30,7 +30,7 @@ class Backend(BaseBackend):
         for entry in db_entries:
             el_uuid = "00000000000000000000000000000000"
             if len(entry.xpath("UUID")) > 0:
-                el_uuid = entry.find("UUID")
+                el_uuid = entry.find("UUID").text
 
             if self._ignore_entry(el_uuid):
                 continue
@@ -74,10 +74,10 @@ class Backend(BaseBackend):
         # create entry
         entry = etree.SubElement(deepest_group, "Entry")
         entry.UUID = base64.b64encode(uuid.uuid4().bytes)
-        self._entry_el_add_stringattribute(entry, "Title", title)
-        self._entry_el_add_stringattribute(entry, "UserName", username)
-        self._entry_el_add_stringattribute(entry, "Password", password)
-        self._entry_el_add_stringattribute(entry, "URL", url)
+        self._entry_el_add_stringattribute(entry, "Title", title.decode("utf-8"))
+        self._entry_el_add_stringattribute(entry, "UserName", username.decode("utf-8"))
+        self._entry_el_add_stringattribute(entry, "Password", password.decode("utf-8"))
+        self._entry_el_add_stringattribute(entry, "URL", url.decode("utf-8"))
 
         objectify.deannotate(self.database.obj_root, cleanup_namespaces=True)
 

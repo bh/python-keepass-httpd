@@ -59,12 +59,12 @@ def test_create_login(tmpdir):
     x.sync_entries()
     assert len(x.entries.items) == 1
     # valid logins
-    x.create_login("test_name", "bla@gmail.com", "geheim", "https://www.google.com/login")
+    x.create_login(u"test_name", "bla@gmail.com", "geheim", "https://www.google.com/login")
     # 2 accounts, same domain
-    x.create_login("test_name", "blubb@gmx.net", "geheim2", "https://gmx.net/login")
-    x.create_login("test_name", "blubb2@gmx.net", "geheim3", "https://gmx.net/login")
+    x.create_login(u"test_name", "blubb@gmx.net", "geheim2", "https://gmx.net/login")
+    x.create_login(u"test_name", "blubb2@gmx.net", "geheim3", "https://gmx.net/login")
     # another login
-    x.create_login("test_name", "asdasd@web.de", "geheim4", "http://web.de/login/form.php")
+    x.create_login(u"test_name", "asdasd@web.de", "geheim4", "http://web.de/login/form.php")
     # x.get_entries(purge_cache=True)
 
     assert len(x.entries.items) == 5
