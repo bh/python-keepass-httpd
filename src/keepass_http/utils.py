@@ -71,6 +71,7 @@ def get_logging_handler_streams():
 
 
 class Singleton(object):
+
     """
     Borg pattern
 
