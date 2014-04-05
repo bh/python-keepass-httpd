@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
+import random
 
 from libkeepass import crypto as libkeepass_crypto
 
@@ -22,3 +23,8 @@ class AESCipher(object):
 
     def is_valid(self, iv, verifier):
         return iv == self.decrypt(verifier)
+
+    @staticmethod
+    def generate_nonce():
+        nonce = str(random.randint(1, 10 ** 16)).zfill(16)
+        return base64.b64encode(nonce)

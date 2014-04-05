@@ -4,6 +4,11 @@ import pytest
 from keepass_http.crypto import AESCipher
 
 
+def test_gen_nonce():
+    nonce = AESCipher.generate_nonce()
+    assert len(nonce) == 24  # a 16 char number should always result in a 24 char base64 string
+
+
 def test_aes_ok_decrypt():
     saved_key = "thT80v8XOBJaFZ85wmP05TdqSX/BB4lVTIvGuac/vgE="
 
