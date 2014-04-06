@@ -28,7 +28,6 @@ class Request:
         self.server = server
         self._kpc = None
         self._response_kpc = None
-        log.info("Got request: %s" % self.__class__.__name__)
 
     @abc.abstractmethod
     def get_response(self, request_dict):
