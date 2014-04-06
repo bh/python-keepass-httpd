@@ -33,7 +33,7 @@ def test_associaterequest_successfull(mock_require_client_name, mock_create_conf
                               'Verifier': 'tawc1wLei/tqFyEkP2Grs1jJkqk4bQk6iN696iyvR7o=',
                               'Nonce': 'OTYwOTgzNjI0MzcxMzQ5MQ=='}
 
-    response = request.get_response(test_dict)
+    response = request(test_dict)
     assert response == expected_response_dict
 
     mock_create_config_key.assert_called_once_with(test_client_name,
@@ -49,4 +49,4 @@ def test_associaterequest_no_accept(mock_require_client_name):
     request = requests.AssociateRequest(test_server)
 
     expected_response_dict = {'Success': False}
-    assert request.get_response(test_dict) == expected_response_dict
+    assert request(test_dict) == expected_response_dict

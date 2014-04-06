@@ -70,6 +70,6 @@ class KeepassHTTPRequestHandler(SocketServer.BaseRequestHandler):
                 "Request type %s is not yet implemented" %
                 request_dict["RequestType"])
 
-        response = request.get_response(request_dict)
+        response = request(request_dict)
         log.info("Request was successfull: %s" % response.get("Success", "unknown??"))
-        return response
+        return

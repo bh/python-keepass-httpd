@@ -23,7 +23,7 @@ class TestKPC(mock.Mock):
 
 class ImplementedRequest(requests.Request):
 
-    def get_response(self, request_dict):
+    def process(self, request_dict):
         return
 
 
@@ -155,11 +155,10 @@ def test_baserequest_set_verifier_with_valid_key(mock_get_config, mock_kpc):
 
     request = ImplementedRequest(test_server)
 
-    response_dict = {}
-    request.set_verifier(response_dict, "some client")
+    request.set_verifier("some client")
 
-    assert response_dict['Nonce'] != None
-    assert response_dict['Verifier'] != None
+    assert request.get_response_dict()['Nonce'] != None
+    assert request.get_response_dict()['Verifier'] != None
 
 @mock.patch.object(TestBackend, "get_config")
 def test_baserequest_set_verifier_with_invalid_key(mock_get_config):
@@ -170,6 +169,5 @@ def test_baserequest_set_verifier_with_invalid_key(mock_get_config):
     aes._kpc = mock.Mock(return_value=None)
 
     request = ImplementedRequest(test_server)
-    response_dict = {}
     with pytest.raises(requests.AuthenticationError):
-	request.set_verifier(response_dict, "nomatterwhat")
+	       request.set_verifier("nomatterwhat")
