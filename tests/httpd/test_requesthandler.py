@@ -56,25 +56,30 @@ def test_handle_request(mock_handle):
     """
     server = TestServer()
 
-    with mock.patch.object(requests.TestAssociateRequest, "get_response") as mock_get_response:
+    with mock.patch.object(requests.TestAssociateRequest, "__call__") as mock_process:
         request = KeepassHTTPRequestHandler(None, None, server)
         request.handle_request({"RequestType": "test-associate"})
-        mock_get_response.assert_callend_once_with(server)
+        mock_process.assert_called_once_with({"RequestType": "test-associate"})
 
-    with mock.patch.object(requests.AssociateRequest, "get_response") as mock_get_response:
+    with mock.patch.object(requests.AssociateRequest, "__call__") as mock_process:
         request = KeepassHTTPRequestHandler(None, None, server)
         request.handle_request({"RequestType": "associate"})
-        mock_get_response.assert_callend_once_with(server)
+        mock_process.assert_called_once_with({"RequestType": "associate"})
 
-    with mock.patch.object(requests.GetLoginsRequest, "get_response") as mock_get_response:
+    with mock.patch.object(requests.GetLoginsRequest, "__call__") as mock_process:
         request = KeepassHTTPRequestHandler(None, None, server)
         request.handle_request({"RequestType": "get-logins"})
-        mock_get_response.assert_callend_once_with(server)
+        mock_process.assert_called_once_with({"RequestType": "get-logins"})
 
-    with mock.patch.object(requests.SetLoginRequest, "get_response") as mock_get_response:
+    with mock.patch.object(requests.SetLoginRequest, "__call__") as mock_process:
         request = KeepassHTTPRequestHandler(None, None, server)
         request.handle_request({"RequestType": "set-login"})
-        mock_get_response.assert_callend_once_with(server)
+        mock_process.assert_called_once_with({"RequestType": "set-login"})
+
+    with mock.patch.object(requests.GetLoginsCountRequest, "__call__") as mock_process:
+        request = KeepassHTTPRequestHandler(None, None, server)
+        request.handle_request({"RequestType": "get-logins-count"})
+        mock_process.assert_called_once_with({"RequestType": "get-logins-count"})
 
     request = KeepassHTTPRequestHandler(None, None, server)
     with pytest.raises(NotImplementedError):
