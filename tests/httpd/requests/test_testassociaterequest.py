@@ -20,7 +20,7 @@ def test_testassociaterequest(mock_authenticate):
     test_server = TestServer()
     request = requests.TestAssociateRequest(test_server)
 
-    assert request.get_response(test_dict) == {"Success": False}
+    assert request(test_dict) == {"Success": False}
 
 
 def test_testassociaterequest_invalid_clientname():
@@ -28,7 +28,7 @@ def test_testassociaterequest_invalid_clientname():
     test_server = TestServer()
     request = requests.TestAssociateRequest(test_server)
 
-    assert request.get_response(test_dict) == {"Success": False}
+    assert request(test_dict) == {"Success": False}
 
 
 @mock.patch.object(requests.Request, "set_verifier")
@@ -41,4 +41,4 @@ def test_testassociaterequest_ok(mock_authenticate, mock_set_verifier):
     test_server = TestServer()
     request = requests.TestAssociateRequest(test_server)
 
-    assert request.get_response(test_dict) == {"Id": "test_clientname", "Success": True}
+    assert request(test_dict) == {"Id": "test_clientname", "Success": True}

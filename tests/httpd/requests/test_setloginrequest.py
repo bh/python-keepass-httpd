@@ -37,7 +37,7 @@ def test_setloginrequest_successfull(mock_authenticate, mock_get_kpc, mock_creat
     request = requests.SetLoginRequest(test_server)
 
     # TODO: remove the request values from response dict
-    assert request.get_response(test_dict) == {'Success': True}
+    assert request(test_dict) == {'Success': True}
 
     mock_create_login.assert_called_once_with('test_clientname', 'some user',
                                               'password', 'http://twitter.com/login')
@@ -48,4 +48,4 @@ def test_setlogin_request_not_valid_authentication(mock_authenticate):
     request = requests.SetLoginRequest(None)
 
     mock_authenticate.side_effect = requests.AuthenticationError()
-    assert request.get_response({}) == {'Success': False}
+    assert request({}) == {'Success': False}

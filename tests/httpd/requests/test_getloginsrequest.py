@@ -34,7 +34,7 @@ def test_getloginsrequest_no_entries(mock_authenticate, mock_get_kpc, mock_searc
     test_server = TestServer()
 
     request = requests.GetLoginsRequest(test_server)
-    assert request.get_response(test_dict) == {'Success': True, 'Entries': []}
+    assert request(test_dict) == {'Success': True, 'Entries': []}
 
 
 @mock.patch.object(requests.Request, "set_verifier")
@@ -61,7 +61,7 @@ def test_getloginsrequest_with_entries(mock_authenticate, mock_get_response_kpc,
 
     request = requests.GetLoginsRequest(test_server)
 
-    assert request.get_response(test_dict) == {'Success': True,
+    assert request(test_dict) == {'Success': True,
                                                'Entries': [{'Login': 'login_encrypted',
                                                             'Password': 'password_encrypted',
                                                             'Name': 'name_encrypted',
@@ -78,4 +78,4 @@ def test_getloginsrequest_request_not_valid_authentication(mock_authenticate):
     request = requests.GetLoginsRequest(None)
 
     mock_authenticate.side_effect = requests.AuthenticationError()
-    assert request.get_response({}) == {'Success': False}
+    assert request({}) == {'Success': False}

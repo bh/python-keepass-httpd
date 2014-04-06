@@ -23,7 +23,7 @@ def test_getloginscountrequest_request_not_valid_authentication(mock_authenticat
     request = requests.GetLoginsCountRequest(None)
 
     mock_authenticate.side_effect = requests.AuthenticationError()
-    assert request.get_response({}) == {'Success': False}
+    assert request({}) == {'Success': False}
 
 
 @mock.patch.object(requests.Request, "set_verifier")
@@ -43,7 +43,7 @@ def test_getloginscountrequest_no_entries(mock_get_kpc, mock_authenticate, mock_
                  "Id": "asdasd",
                  'Nonce': "asd", "Verifier": "ssa",
                  "Url": "http://www.google.de/login"}
-    assert request.get_response(test_dict) == {'Count': 0, 'Success': True}
+    assert request(test_dict) == {'Count': 0, 'Success': True}
 
 
 @mock.patch.object(requests.Request, "set_verifier")
@@ -66,4 +66,4 @@ def test_getloginscountrequest_with_entries(mock_get_kpc, mock_authenticate, moc
                  'Nonce': "some nonce", "Verifier": "some verifier",
                  "Url": "http://www.google.de/login"}
 
-    assert request.get_response(test_dict) == {'Count': 1, 'Success': True}
+    assert request(test_dict) == {'Count': 1, 'Success': True}
