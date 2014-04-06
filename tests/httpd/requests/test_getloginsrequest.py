@@ -17,14 +17,16 @@ class TestKPC(mock.Mock):
     decrypt = mock.Mock(return_value=None)
     encrypt = mock.Mock()
 
-
+@mock.patch.object(requests.Request, "set_verifier")
+@mock.patch.object(requests.Request, "get_response_kpc")
 @mock.patch.object(TestBackend, "search_entries")
 @mock.patch.object(requests.Request, "get_kpc")
 @mock.patch.object(requests.Request, "authenticate")
-def test_getloginsrequest_no_entries(mock_authenticate, mock_get_kpc, mock_search_entries):
+def test_getloginsrequest_no_entries(mock_authenticate, mock_get_kpc, mock_search_entries, mock_get_response_kpc, mock_set_verifier):
     mock_authenticate.return_value = None
 
-    mock_get_kpc.return_value = TestKPC()
+    mock_get_kpc.return_value =  TestKPC()
+    mock_get_response_kpc.return_value = TestKPC()
     mock_search_entries.return_value = []
 
     test_dict = {"Id": "test_clientname",
@@ -40,7 +42,7 @@ def test_getloginsrequest_no_entries(mock_authenticate, mock_get_kpc, mock_searc
 @mock.patch.object(requests.Request, "get_kpc")
 @mock.patch.object(requests.Request, "get_response_kpc")
 @mock.patch.object(requests.Request, "authenticate")
-def test_associaterequest_with_entries(mock_authenticate, mock_get_response_kpc, mock_get_kpc, mock_search_entries, mock_set_verifier):
+def test_getloginsrequest_with_entries(mock_authenticate, mock_get_response_kpc, mock_get_kpc, mock_search_entries, mock_set_verifier):
     mock_authenticate.return_value = None
 
     kpc = TestKPC()
@@ -72,7 +74,7 @@ def test_associaterequest_with_entries(mock_authenticate, mock_get_response_kpc,
 
 
 @mock.patch.object(requests.Request, "authenticate")
-def test_getlogins_request_not_valid_authentication(mock_authenticate):
+def test_getloginsrequest_request_not_valid_authentication(mock_authenticate):
     request = requests.GetLoginsRequest(None)
 
     mock_authenticate.side_effect = requests.AuthenticationError()

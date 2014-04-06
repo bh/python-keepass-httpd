@@ -71,5 +71,5 @@ class KeepassHTTPRequestHandler(SocketServer.BaseRequestHandler):
                 request_dict["RequestType"])
 
         response = request.get_response(request_dict)
-        log.info("Success is %s" % response.get("Success", "???"))
+        log.info("Request was successfull: %s" % response.get("Success", "unknown??"))
         return response
