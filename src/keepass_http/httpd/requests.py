@@ -124,27 +124,25 @@ class GetLoginsRequest(Request):
     def get_response(self, request_dict):
         response_dict = {}
         response_dict['Success'] = False
+
         try:
             self.authenticate(request_dict)
         except AuthenticationError as unused_e:
             return response_dict
         client_name = request_dict["Id"]
-        try:
-            response_dict['Success'] = True
-            response_dict["Entries"] = []
 
-            url = str(self.get_kpc().decrypt(request_dict['Url']))
-            url = urlparse(url).netloc
-            url = url.decode("utf-8")
+        response_dict['Success'] = True
+        response_dict["Entries"] = []
 
-            self.set_verifier(response_dict, client_name)
-            entries = self.server.backend.search_entries("url", url)
-            for entry in entries:
-                json_entry = entry.to_json_dict(self.get_response_kpc())
-                response_dict["Entries"].append(json_entry)
-            log.debug(response_dict)#
-        except:
-            log.exception("XXXXXXXX")
+        url = str(self.get_kpc().decrypt(request_dict['Url']))
+        url = urlparse(url).netloc
+        url = url.decode("utf-8")
+
+        self.set_verifier(response_dict, client_name)
+        entries = self.server.backend.search_entries("url", url)
+        for entry in entries:
+            json_entry = entry.to_json_dict(self.get_response_kpc())
+            response_dict["Entries"].append(json_entry)
         return response_dict
 
 
