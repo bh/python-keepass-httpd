@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import pytest
-
 from keepass_http.crypto import AESCipher
 
 

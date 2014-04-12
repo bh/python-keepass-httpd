@@ -20,45 +20,41 @@ class NotAuthenticated(AuthenticationError):
     pass
 
 
-class Request:
+class Request(object):
     __metaclass__ = abc.ABCMeta
-    name = None
 
-    def __init__(self, server):
-        self.server = server
+    def __init__(self):
         self._kpc = None
         self._response_kpc = None
-        self._response_dict = dict(success=False)
-
-    def update_response_dict(self, **kwargs):
-        self._response_dict.update(kwargs)
-
-    def get_response_dict(self):
-        ret = {}
-        for k, v in self._response_dict.iteritems():
-            ret[k.capitalize()] = v
-        return ret
+        self._request_dict = None
+        self._response_dict = None
 
     def __call__(self, request_dict):
-        self.process(request_dict)
-        return self.get_response_dict()
+        self._request_dict = request_dict
+        self.process()
+        return self.response_dict
+
+    @property
+    def response_dict(self):
+        if not self._response_dict:
+            self._response_dict = {"Success": False}
+        return self._response_dict
 
     @abc.abstractmethod
     def process(self, request_dict):
         """
         """
 
-    def authenticate(self, request_dict):
-        client_name = request_dict["Id"]
+    def authenticate(self):
+        client_id = self.get_client_id()
+        log.info("Authenticate client %s" % client_id)
 
-        log.info("Authenticate client %s" % client_name)
-
-        key = self.server.backend.get_config(client_name)
+        key = Conf().backend.get_config(client_id)
         if not key:
             raise AuthenticationError()
 
-        nonce = request_dict['Nonce']
-        verifier = request_dict['Verifier']
+        nonce = self._request_dict['Nonce']
+        verifier = self._request_dict['Verifier']
 
         kpc = AESCipher(key, nonce)
 
@@ -68,16 +64,20 @@ class Request:
 
         self._kpc = kpc
 
-    def set_verifier(self, client_name):
-        key = self.server.backend.get_config(client_name)
+    def set_verifier(self, new_client_id=None):
+        client_id = new_client_id or self.get_client_id()
+
+        key = Conf().backend.get_config(client_id)
         if not key:
             raise AuthenticationError("set_verifier - Could not set verifier: no valid "
-                                      "key for client: %s " % client_name)
+                                      "key for client: %s " % client_id)
         nonce = AESCipher.generate_nonce()
         self._response_kpc = AESCipher(key, nonce)
-        self.update_response_dict(Nonce=nonce,
-                                  Verifier=self._response_kpc.encrypt(nonce))
+        self.response_dict.update({"Nonce": nonce,
+                                   "Verifier": self._response_kpc.encrypt(nonce)})
 
+    def get_client_id(self):
+        return self._request_dict.get("Id", None)
 
     def get_kpc(self):
         if not self._kpc:
@@ -92,95 +92,90 @@ class Request:
 
 class TestAssociateRequest(Request):
 
-    def process(self, request_dict):
-
-        client_name = request_dict.get("Id", None)
+    def process(self):
+        client_id = self.get_client_id()
         # missing field -> force associate
-        if not client_name:
+        if not client_id:
             return
 
         # no auth -> force associate
         try:
-            self.authenticate(request_dict)
+            self.authenticate()
         except AuthenticationError as unused_e:
             return
 
         # already associated, all fine
-        self.update_response_dict(id=client_name,
-                                  success=True)
+        self.response_dict.update({"Id": client_id,
+                                  "Success": True})
 
-        self.set_verifier(client_name)
+        self.set_verifier()
 
 
 class AssociateRequest(Request):
 
-    def process(self, request_dict):
+    def process(self):
 
         kpconf = Conf()
-        new_client_name = kpconf.get_selected_ui().RequireAssociationDecision.require_client_name()
-        if new_client_name:
-            self.server.backend.create_config_key(new_client_name, request_dict["Key"])
-            self.update_response_dict(id=new_client_name,
-                                      success=True)
+        new_client_id = kpconf.get_selected_ui().RequireAssociationDecision.require_client_name()
+        if new_client_id:
+            kpconf.backend.create_config_key(new_client_id, self._request_dict["Key"])
+            self.response_dict.update({"Id": new_client_id,
+                                       "Success": True})
 
-            self.set_verifier(new_client_name)
+            self.set_verifier(new_client_id)
 
 
 class GetLoginsRequest(Request):
 
-    def process(self, request_dict):
+    def process(self):
         try:
-            self.authenticate(request_dict)
+            self.authenticate()
         except AuthenticationError as unused_e:
             return
-        client_name = request_dict["Id"]
 
-        url = str(self.get_kpc().decrypt(request_dict['Url']))
+        url = str(self.get_kpc().decrypt(self._request_dict['Url']))
         url = urlparse(url).netloc
         url = url.decode("utf-8")
 
-
         entries = []
-        for entry in self.server.backend.search_entries("url", url):
+        self.set_verifier()
+        for entry in Conf().backend.search_entries("url", url):
             json_entry = entry.to_json_dict(self.get_response_kpc())
             entries.append(json_entry)
 
-        self.update_response_dict(success=True, entries=entries)
-        self.set_verifier(client_name)
+        self.response_dict.update({"Success": True, "Id": self.get_client_id(), "Entries": entries})
+
 
 class GetLoginsCountRequest(Request):
 
-    def process(self, request_dict):
+    def process(self):
         try:
-            self.authenticate(request_dict)
+            self.authenticate()
         except AuthenticationError as unused_e:
             return
-        client_name = request_dict["Id"]
-        url = self.get_kpc().decrypt(request_dict['Url'])
+        url = self.get_kpc().decrypt(self._request_dict['Url'])
         url = url.decode("utf-8")
 
-        entries = self.server.backend.search_entries("url", url)
+        entries = Conf().backend.search_entries("url", url)
 
-        self.update_response_dict(success=True,
-                                  count=len(entries))
-
-        self.set_verifier(client_name)
+        self.response_dict.update({"Success": True, "Count": len(entries)})
 
 
 class SetLoginRequest(Request):
 
-    def process(self, request_dict):
+    def process(self):
         try:
-            self.authenticate(request_dict)
+            self.authenticate()
         except AuthenticationError as unused_e:
             return
 
         kpc = self.get_kpc()
 
-        url = kpc.decrypt(request_dict['SubmitUrl'])
-        login = kpc.decrypt(request_dict['Login'])
-        password = kpc.decrypt(request_dict['Password'])
+        url = kpc.decrypt(self._request_dict['SubmitUrl'])
+        login = kpc.decrypt(self._request_dict['Login'])
+        password = kpc.decrypt(self._request_dict['Password'])
 
-        self.server.backend.create_login(request_dict["Id"], login, password, url)
+        Conf().backend.create_login(self.get_client_id(), login, password, url)
 
-        self.update_response_dict(success=True)
+        self.response_dict.update({"Success": True})
+        self.set_verifier()

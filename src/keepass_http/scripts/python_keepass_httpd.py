@@ -18,14 +18,15 @@ Options:
 import getpass
 import os
 import sys
+from functools import partial
 
 import daemonize
 import docopt
 
 from keepass_http import backends
 from keepass_http.core import Conf, logging
-from keepass_http.httpd.server import KeepassHTTPServer
-from keepass_http.utils import get_logging_handler_streams, has_gui_support
+from keepass_http.httpd.server import app
+from keepass_http.utils import get_logging_filehandlers_streams_to_keep, has_gui_support
 
 APP_NAME = "keepass_http_script"
 log = logging.getLogger(APP_NAME)
@@ -59,8 +60,8 @@ def main():
     kpconf.set_loglevel(loglevel)
 
     # server
-    server = KeepassHTTPServer(host, int(port))
-    server.set_is_daemon(is_daemon)
+    #server = KeepassHTTPServer(host, int(port))
+
     # backend
     backend_class = backends.get_backend_by_file(database_path)
 
@@ -86,21 +87,22 @@ def main():
     if success is False:
         sys.exit("Wrong passphrase after %d attempts" % max_try_count)
 
-    server.set_backend(backend)
+    kpconf.set_backend(backend)
 
     # config daemon
+    run_server = partial(app.run, debug=False, host=host, port=int(port))
     if is_daemon:
         pid_file = os.path.join(kpconf.confdir, "process.pid")
         log.info("Server started as daemon on %s:%s" % (host, port))
         daemon = daemonize.Daemonize(app=APP_NAME,
                                      pid=pid_file,
-                                     action=server.serve_forever,
-                                     keep_fds=get_logging_handler_streams() + [server.fileno()])
-        daemon.logger = log
+                                     action=run_server,
+                                     keep_fds=get_logging_filehandlers_streams_to_keep())
         daemon.start()
+
     else:
         log.info("Server started on %s:%s" % (host, port))
-        server.serve_forever()
+        run_server()
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,5 @@
 PIP=pip
-RUN_TESTS=py.test --cov=keepass_http --cov-report=term-missing
+RUN_TESTS=py.test --cov=keepass_http --cov-report=term-missing --cov-report html
 
 build_dev_env:
 	$(PIP) install -e .
@@ -20,8 +20,6 @@ dev_test: build_dev_env run_tests
 test: build_test_env run_tests
 	
 show_html_coverage:	dev_test
-	rm -rf coverage_html_report/
-	coverage html
 	xdg-open coverage_html_report/index.html
 	
 style:
@@ -34,9 +32,9 @@ style:
 	find . -name "*.py" -exec pyflakes {} \;
 	
 clean:
-	-find . -name __pycache__ -type d -exec rm -rf {} \; > /dev/null || true
-	-find . -name "*.pyc" -delete > /dev/null || true
-	-rm -rf dist/ build/ src/*.egg-info> /dev/null || true
+	-find . -name __pycache__ -type d | xargs rm -rf
+	-find . -name "*.pyc"| xargs rm -f
+	-rm -rf dist/ build/ src/*.egg-info
 	
 bumpversion:
 	bumpversion part --new-version $(VERSION)
