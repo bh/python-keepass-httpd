@@ -73,13 +73,18 @@ def mkdir_p(path):
 
 def get_logging_filehandlers_streams_to_keep():
     """
-    Return all open file handlers for logging stream loggers.
+    Return all open logging handler file descriptors.
     This is used to avoid closing open file handlers while detaching to background.
+
+    But don't keep /dev/stdout.
 
     """
     filenos = []
     for handler in logging._handlerList:
-        filenos.append(handler().stream.fileno())
+        stream = handler().stream
+        if stream.name == "<stdout>":
+            continue
+        filenos.append(stream.fileno())
     return filenos
 
 
