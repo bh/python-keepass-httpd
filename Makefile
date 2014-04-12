@@ -1,5 +1,5 @@
 PIP=pip
-RUN_TESTS=py.test --cov=keepass_http --cov-report=term-missing
+RUN_TESTS=py.test --cov=keepass_http --cov-report=term-missing --cov-report html
 
 build_dev_env:
 	$(PIP) install -e .
@@ -20,8 +20,6 @@ dev_test: build_dev_env run_tests
 test: build_test_env run_tests
 	
 show_html_coverage:	dev_test
-	rm -rf coverage_html_report/
-	coverage html
 	xdg-open coverage_html_report/index.html
 	
 style:
