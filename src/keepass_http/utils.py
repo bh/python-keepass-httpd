@@ -71,7 +71,7 @@ def mkdir_p(path):
             raise  # pragma: no cover
 
 
-def get_logging_handler_streams():
+def get_logging_filehandlers_streams_to_keep():
     """
     Return all open file handlers for logging stream loggers.
     This is used to avoid closing open file handlers while detaching to background.
