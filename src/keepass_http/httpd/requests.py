@@ -53,6 +53,7 @@ class Request:
 
         log.info("Authenticate client %s" % client_name)
 
+        key = Conf().backend.get_config(client_id)
         key = self.server.backend.get_config(client_name)
         if not key:
             raise AuthenticationError()
@@ -70,6 +71,7 @@ class Request:
 
     def set_verifier(self, client_name):
         key = self.server.backend.get_config(client_name)
+        key = Conf().backend.get_config(client_id)
         if not key:
             raise AuthenticationError("set_verifier - Could not set verifier: no valid "
                                       "key for client: %s " % client_name)
@@ -119,9 +121,9 @@ class AssociateRequest(Request):
         kpconf = Conf()
         new_client_name = kpconf.get_selected_ui().RequireAssociationDecision.require_client_name()
         if new_client_name:
-            self.server.backend.create_config_key(new_client_name, request_dict["Key"])
             self.update_response_dict(id=new_client_name,
                                       success=True)
+            kpconf.backend.create_config_key(new_client_id, self._request_dict["Key"])
 
             self.set_verifier(new_client_name)
 
@@ -141,7 +143,7 @@ class GetLoginsRequest(Request):
 
 
         entries = []
-        for entry in self.server.backend.search_entries("url", url):
+        for entry in Conf().backend.search_entries("url", url):
             json_entry = entry.to_json_dict(self.get_response_kpc())
             entries.append(json_entry)
 
@@ -159,8 +161,7 @@ class GetLoginsCountRequest(Request):
         url = self.get_kpc().decrypt(request_dict['Url'])
         url = url.decode("utf-8")
 
-        entries = self.server.backend.search_entries("url", url)
-
+        entries = Conf().backend.search_entries("url", url)
         self.update_response_dict(success=True,
                                   count=len(entries))
 
@@ -181,6 +182,6 @@ class SetLoginRequest(Request):
         login = kpc.decrypt(request_dict['Login'])
         password = kpc.decrypt(request_dict['Password'])
 
-        self.server.backend.create_login(request_dict["Id"], login, password, url)
+        Conf().backend.create_login(self.get_client_id(), login, password, url)
 
         self.update_response_dict(success=True)

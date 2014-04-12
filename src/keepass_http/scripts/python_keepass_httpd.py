@@ -86,7 +86,7 @@ def main():
     if success is False:
         sys.exit("Wrong passphrase after %d attempts" % max_try_count)
 
-    server.set_backend(backend)
+    kpconf.set_backend(backend)
 
     # config daemon
     if is_daemon:

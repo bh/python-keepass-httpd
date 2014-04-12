@@ -20,6 +20,9 @@ class Conf(Singleton):
         self.configure_paths()
         self.configure_mimetypes()
 
+    def set_backend(self, backend):
+        self.backend = backend
+
     @staticmethod
     def configure_mimetypes():
         """
