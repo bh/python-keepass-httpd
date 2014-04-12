@@ -32,9 +32,9 @@ style:
 	find . -name "*.py" -exec pyflakes {} \;
 	
 clean:
-	-find . -name __pycache__ -type d -exec rm -rf {} \; > /dev/null || true
-	-find . -name "*.pyc" -delete > /dev/null || true
-	-rm -rf dist/ build/ src/*.egg-info> /dev/null || true
+	-find . -name __pycache__ -type d | xargs rm -rf
+	-find . -name "*.pyc"| xargs rm -f
+	-rm -rf dist/ build/ src/*.egg-info
 	
 bumpversion:
 	bumpversion part --new-version $(VERSION)
