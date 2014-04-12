@@ -15,13 +15,13 @@ setup(name="keepass_http",
       packages=find_packages("src/"),
       include_package_data=True,
       install_requires=("colorlog==2.0.0",
-                        "keepass==1.2",
                         "daemonize==2.2.3",
                         "docopt==0.6.1",
-                        "setproctitle==1.1.8",
+                        "enum34==0.9.23",
+                        "flask==0.10.1",
+                        "keepass==1.2",
                         "libkeepass==0.1.2",
-                        "lxml==3.2.1",
-                        "enum34==0.9.23"),
+                        "lxml==3.2.1"),
       entry_points={
           'console_scripts': [
               'python-keepass-httpd = keepass_http.scripts.python_keepass_httpd:main'
