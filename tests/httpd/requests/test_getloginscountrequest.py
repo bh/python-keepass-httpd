@@ -9,7 +9,7 @@ class TestBackend(mock.Mock):
     search_entries = mock.Mock()
 
 
-class TestServer(mock.Mock):
+class TestConf(mock.Mock):
     backend = TestBackend()
 
 
@@ -20,12 +20,13 @@ class TestKPC(mock.Mock):
 
 @mock.patch.object(requests.Request, "authenticate")
 def test_getloginscountrequest_request_not_valid_authentication(mock_authenticate):
-    request = requests.GetLoginsCountRequest(None)
+    request = requests.GetLoginsCountRequest()
 
     mock_authenticate.side_effect = requests.AuthenticationError()
     assert request({}) == {'Success': False}
 
 
+@mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch.object(requests.Request, "set_verifier")
 @mock.patch.object(TestBackend, "search_entries")
 @mock.patch.object(requests.Request, "authenticate")
@@ -36,8 +37,7 @@ def test_getloginscountrequest_no_entries(mock_get_kpc, mock_authenticate, mock_
     kpc.decrypt.side_effect = ["url_encrypted",]
     mock_get_kpc.return_value = kpc
 
-    test_server = TestServer()
-    request = requests.GetLoginsCountRequest(test_server)
+    request = requests.GetLoginsCountRequest()
 
     test_dict = {"Key": "Some 64 encoded key",
                  "Id": "asdasd",
@@ -46,6 +46,7 @@ def test_getloginscountrequest_no_entries(mock_get_kpc, mock_authenticate, mock_
     assert request(test_dict) == {'Count': 0, 'Success': True}
 
 
+@mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch.object(requests.Request, "set_verifier")
 @mock.patch.object(TestBackend, "search_entries")
 @mock.patch.object(requests.Request, "authenticate")
@@ -58,8 +59,7 @@ def test_getloginscountrequest_with_entries(mock_get_kpc, mock_authenticate, moc
     kpc.decrypt.side_effect = ["url_encrypted",]
     mock_get_kpc.return_value = kpc
 
-    test_server = TestServer()
-    request = requests.GetLoginsCountRequest(test_server)
+    request = requests.GetLoginsCountRequest()
 
     test_dict = {"Key": "Some 64 encoded key",
                  "Id": "some knwon client",

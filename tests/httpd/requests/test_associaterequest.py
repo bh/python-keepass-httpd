@@ -3,7 +3,7 @@ import mock
 
 from keepass_http.crypto import AESCipher
 from keepass_http.httpd import requests
-from keepass_http.ui.cli import RequireAssociationDecision
+from keepass_http.ui import cli
 
 
 class TestBackend(mock.Mock):
@@ -11,13 +11,14 @@ class TestBackend(mock.Mock):
     get_config = mock.Mock(return_value="NDI2MjYyOTI0NDA1MjMyNDQ1OTg5ODc2MDYwNjY4NDI=")
 
 
-class TestServer(mock.Mock):
+class TestConf(mock.Mock):
     backend = TestBackend()
+    get_selected_ui = mock.Mock(return_value=cli)
 
-
+@mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch.object(AESCipher, 'generate_nonce')
 @mock.patch.object(TestBackend, "create_config_key")
-@mock.patch.object(RequireAssociationDecision, "require_client_name")
+@mock.patch.object(cli.RequireAssociationDecision, "require_client_name")
 def test_associaterequest_successfull(mock_require_client_name, mock_create_config_key, mock_generate_nonce):
     test_client_name = "test client name"
     mock_require_client_name.return_value = test_client_name
@@ -25,8 +26,7 @@ def test_associaterequest_successfull(mock_require_client_name, mock_create_conf
 
     test_dict = {"Key": "Some 64 encoded key",
                  'Nonce': "asd", "Verifier": "ssa"}
-    test_server = TestServer()
-    request = requests.AssociateRequest(test_server)
+    request = requests.AssociateRequest()
 
     expected_response_dict = {'Success': True,
                               'Id': test_client_name,
@@ -40,13 +40,11 @@ def test_associaterequest_successfull(mock_require_client_name, mock_create_conf
                                                    'Some 64 encoded key')
 
 
-@mock.patch.object(RequireAssociationDecision, "require_client_name")
+@mock.patch.object(cli.RequireAssociationDecision, "require_client_name")
 def test_associaterequest_no_accept(mock_require_client_name):
     mock_require_client_name.return_value = None
 
     test_dict = {"Key": "Some 64 encoded key"}
-    test_server = TestServer()
-    request = requests.AssociateRequest(test_server)
+    request = requests.AssociateRequest()
 
-    expected_response_dict = {'Success': False}
-    assert request(test_dict) == expected_response_dict
+    assert request(test_dict) == {'Success': False}

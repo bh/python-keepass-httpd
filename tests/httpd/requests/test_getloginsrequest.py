@@ -9,7 +9,7 @@ class TestBackend(mock.Mock):
     search_entries = mock.Mock()
 
 
-class TestServer(mock.Mock):
+class TestConf(mock.Mock):
     backend = TestBackend()
 
 
@@ -17,34 +17,31 @@ class TestKPC(mock.Mock):
     decrypt = mock.Mock(return_value=None)
     encrypt = mock.Mock()
 
+@mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch.object(requests.Request, "set_verifier")
 @mock.patch.object(requests.Request, "get_response_kpc")
 @mock.patch.object(TestBackend, "search_entries")
 @mock.patch.object(requests.Request, "get_kpc")
 @mock.patch.object(requests.Request, "authenticate")
 def test_getloginsrequest_no_entries(mock_authenticate, mock_get_kpc, mock_search_entries, mock_get_response_kpc, mock_set_verifier):
-    mock_authenticate.return_value = None
-
     mock_get_kpc.return_value =  TestKPC()
     mock_get_response_kpc.return_value = TestKPC()
     mock_search_entries.return_value = []
 
     test_dict = {"Id": "test_clientname",
                  "Url": "http://www.google.de/login"}
-    test_server = TestServer()
 
-    request = requests.GetLoginsRequest(test_server)
-    assert request(test_dict) == {'Success': True, 'Entries': []}
+    request = requests.GetLoginsRequest()
+    assert request(test_dict) == {'Success': True, "Id": "test_clientname", 'Entries': []}
 
 
+@mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch.object(requests.Request, "set_verifier")
 @mock.patch.object(TestBackend, "search_entries")
 @mock.patch.object(requests.Request, "get_kpc")
 @mock.patch.object(requests.Request, "get_response_kpc")
 @mock.patch.object(requests.Request, "authenticate")
 def test_getloginsrequest_with_entries(mock_authenticate, mock_get_response_kpc, mock_get_kpc, mock_search_entries, mock_set_verifier):
-    mock_authenticate.return_value = None
-
     kpc = TestKPC()
     mock_get_kpc.return_value = kpc
     mock_get_response_kpc.return_value = kpc
@@ -55,13 +52,13 @@ def test_getloginsrequest_with_entries(mock_authenticate, mock_get_response_kpc,
     test_dict = {"Id": "test_clientname",
                  "Url": "http://www.google.de/login"}
 
-    test_server = TestServer()
     kpc.encrypt.side_effect = ["name_encrypted", "login_encrypted", "uuid_encrypted",
                                "password_encrypted"]
 
-    request = requests.GetLoginsRequest(test_server)
+    request = requests.GetLoginsRequest()
 
     assert request(test_dict) == {'Success': True,
+                                  "Id": "test_clientname",
                                                'Entries': [{'Login': 'login_encrypted',
                                                             'Password': 'password_encrypted',
                                                             'Name': 'name_encrypted',
@@ -75,7 +72,7 @@ def test_getloginsrequest_with_entries(mock_authenticate, mock_get_response_kpc,
 
 @mock.patch.object(requests.Request, "authenticate")
 def test_getloginsrequest_request_not_valid_authentication(mock_authenticate):
-    request = requests.GetLoginsRequest(None)
+    request = requests.GetLoginsRequest()
 
     mock_authenticate.side_effect = requests.AuthenticationError()
     assert request({}) == {'Success': False}
