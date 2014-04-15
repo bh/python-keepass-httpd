@@ -30,11 +30,12 @@ def test_getloginscountrequest_request_not_valid_authentication(mock_authenticat
 @mock.patch.object(requests.Request, "set_verifier")
 @mock.patch.object(TestBackend, "search_entries")
 @mock.patch.object(requests.Request, "authenticate")
-@mock.patch.object(requests.Request, "get_kpc")
-def test_getloginscountrequest_no_entries(mock_get_kpc, mock_authenticate, mock_search_entries, mock_set_verifier):
+@mock.patch.object(requests.Request, "kpc")
+def test_getloginscountrequest_no_entries(
+        mock_get_kpc, mock_authenticate, mock_search_entries, mock_set_verifier):
     mock_search_entries.return_value = []
     kpc = TestKPC()
-    kpc.decrypt.side_effect = ["url_encrypted",]
+    kpc.decrypt.side_effect = ["url_encrypted", ]
     mock_get_kpc.return_value = kpc
 
     request = requests.GetLoginsCountRequest()
@@ -50,13 +51,14 @@ def test_getloginscountrequest_no_entries(mock_get_kpc, mock_authenticate, mock_
 @mock.patch.object(requests.Request, "set_verifier")
 @mock.patch.object(TestBackend, "search_entries")
 @mock.patch.object(requests.Request, "authenticate")
-@mock.patch.object(requests.Request, "get_kpc")
-def test_getloginscountrequest_with_entries(mock_get_kpc, mock_authenticate, mock_search_entries, mock_set_verifier):
+@mock.patch.object(requests.Request, "kpc")
+def test_getloginscountrequest_with_entries(
+        mock_get_kpc, mock_authenticate, mock_search_entries, mock_set_verifier):
     mock_search_entries.return_value = [EntrySpec(uuid="1", title="Login To Google",
                                                   login="spam.eggs@gmail.com", password="1234",
                                                   url="http://www.google.de/login/form.html")]
     kpc = TestKPC()
-    kpc.decrypt.side_effect = ["url_encrypted",]
+    kpc.decrypt.side_effect = ["url_encrypted", ]
     mock_get_kpc.return_value = kpc
 
     request = requests.GetLoginsCountRequest()
