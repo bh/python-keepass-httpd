@@ -16,6 +16,7 @@ class TestConf(mock.Mock):
 class TestAES(mock.Mock):
     pass
 
+
 class TestKPC(mock.Mock):
     decrypt = mock.Mock(return_value=None)
     encrypt = mock.Mock()
@@ -31,13 +32,15 @@ def test_baserequest_is_abstract():
     with pytest.raises(TypeError):
         requests.Request(None)
 
+
 @mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 def test_baserequest_authenticate_broken_request_dict():
     request = ImplementedRequest()
 
     with pytest.raises(KeyError):
-        request._request_dict = {}
+        request.request_dict.update({})
         request.authenticate()
+
 
 @mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch.object(TestBackend, "get_config")
@@ -46,9 +49,10 @@ def test_baserequest_authenticate_unknown_key(mock_get_config):
 
     mock_get_config.return_value = None
     with pytest.raises(requests.AuthenticationError):
-        request._request_dict = {"Id": "some client name",
-                                 "Key": "some unknown key"}
+        request.request_dict.update({"Id": "some client name",
+                                     "Key": "some unknown key"})
         request.authenticate()
+
 
 @mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch.object(TestBackend, "get_config")
@@ -58,14 +62,15 @@ def test_baserequest_authenticate_broken_request_dict_2(mock_get_config):
     mock_get_config.return_value = "known key"
 
     with pytest.raises(KeyError):
-        request._request_dict = {"Id": "some client name",
-                                 "Key": "some known key"}
+        request.request_dict.update({"Id": "some client name",
+                                     "Key": "some known key"})
         request.authenticate()
 
     with pytest.raises(KeyError):
-        request._request_dict = {"Id": "some client name",
-                                 "Nonce": "some nonce"}
+        request.request_dict.update({"Id": "some client name",
+                                     "Nonce": "some nonce"})
         request.authenticate()
+
 
 @mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch("keepass_http.httpd.requests.AESCipher")
@@ -85,7 +90,7 @@ def test_baserequest_authenticate_with_kpc_invalid(mock_get_config, mock_kpc):
 
     request = ImplementedRequest()
     with pytest.raises(requests.InvalidAuthentication):
-        request._request_dict = request_dict
+        request.request_dict.update(request_dict)
         request.authenticate()
 
 
@@ -106,8 +111,9 @@ def test_baserequest_authenticate_with_kpc_valid(mock_get_config, mock_kpc):
                     "Verifier": "some verifier"}
 
     request = ImplementedRequest()
-    request._request_dict = request_dict
+    request.request_dict.update(request_dict)
     request.authenticate()
+
 
 @mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch("keepass_http.httpd.requests.AESCipher")
@@ -127,9 +133,9 @@ def test_baserequest_authenticate_with_kpc_get_kpc_authenticated(mock_get_config
                     "Verifier": "some verifier"}
 
     request = ImplementedRequest()
-    request._request_dict = request_dict
+    request.request_dict.update(request_dict)
     request.authenticate()
-    request.get_kpc()
+    request.kpc
 
 
 @mock.patch.object(TestBackend, "get_config")
@@ -141,7 +147,8 @@ def test_baserequest_authenticate_with_kpc_get_kpc_not_authenticated(mock_get_co
 
     request = ImplementedRequest()
     with pytest.raises(requests.NotAuthenticated):
-        request.get_kpc()
+        request.kpc
+
 
 @mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch("keepass_http.httpd.requests.AESCipher")
@@ -156,8 +163,9 @@ def test_baserequest_set_verifier_with_valid_key(mock_get_config, mock_kpc):
 
     request.set_verifier("some client")
 
-    assert request.response_dict['Nonce'] != None
-    assert request.response_dict['Verifier'] != None
+    assert request.response_dict['Nonce'] is not None
+    assert request.response_dict['Verifier'] is not None
+
 
 @mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch.object(TestBackend, "get_config")
@@ -169,4 +177,4 @@ def test_baserequest_set_verifier_with_invalid_key(mock_get_config):
 
     request = ImplementedRequest()
     with pytest.raises(requests.AuthenticationError):
-	       request.set_verifier("nomatterwhat")
+        request.set_verifier("nomatterwhat")
