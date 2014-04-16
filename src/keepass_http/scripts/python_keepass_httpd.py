@@ -15,7 +15,6 @@ Options:
   -l --loglevel LOGLEVEL    Loglevel to use [default: INFO]
 """
 
-import getpass
 import os
 import sys
 from functools import partial
@@ -28,6 +27,7 @@ from keepass_http.core import Conf, logging
 from keepass_http.httpd.server import app
 from keepass_http.utils import get_logging_filehandlers_streams_to_keep, has_gui_support
 
+MAX_TRY_COUNT = 3
 APP_NAME = "keepass_http_script"
 log = logging.getLogger(APP_NAME)
 
@@ -61,30 +61,11 @@ def main():
 
     # backend
     backend = backends.BaseBackend.get_by_filepath(database_path)
-
     kpconf.set_backend(backend)
 
-    try_count = 1
-    max_try_count = 3
-    success = False
-    while try_count <= max_try_count:
-        passphrase = getpass.getpass(
-            "Please enter the passphrase for database %s: \n" %
-            database_path)
-        try:
-            backend = backend.open_database(passphrase)
-        except backends.WrongPassword:
-            log.info(
-                "Wrong passphrase, please try again. (attempt [%s/%s]" %
-                (try_count, max_try_count))
-            try_count += 1
-        else:
-            success = True
-            log.info("Passphrase accepted")
-            break
-
+    success = kpconf.get_selected_ui().OpenDatabase.open(MAX_TRY_COUNT)
     if success is False:
-        sys.exit("Wrong passphrase after %d attempts" % max_try_count)
+        sys.exit("Wrong passphrase after %d attempts" % MAX_TRY_COUNT)
 
     # config daemon
     run_server = partial(app.run, debug=False, host=host, port=int(port))

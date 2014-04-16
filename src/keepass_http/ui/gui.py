@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
+import logging
 import Tkinter
 import tkMessageBox
 import ttk
+
+from keepass_http.backends import WrongPassword
+from keepass_http.core import Conf
+
+log = logging.getLogger(__name__)
 
 
 class RequireAssociationDecision(Tkinter.Tk):  # pragma: no cover
@@ -79,6 +85,61 @@ class RequireAssociationDecision(Tkinter.Tk):  # pragma: no cover
         self._frame_2.grid()
 
 
-if __name__ == "__main__":  # pragma: no cover
-    new_client_name = RequireAssociationDecision.require_client_name()
-    print (new_client_name)
+class OpenDatabase(Tkinter.Tk):  # pragma: no cover
+
+    @classmethod
+    def open(cls, max_try_count):
+        success = False
+        try_count = 1
+        while try_count <= max_try_count:
+            gui = cls()
+            gui.geometry()
+            gui.mainloop()
+            gui.destroy()
+            if gui._success is True:
+                log.info("Passphrase accepted")
+                success = True
+                break
+            if gui._success is None:
+                break
+            else:
+                try_count += 1
+                continue
+        return success
+
+    def __init__(self):
+        Tkinter.Tk.__init__(self)
+        self.kpconf = Conf()
+        self._success = False
+        self.setup_frame_1()
+        self.title("Enter the passphrase for %s" % self.kpconf.backend.database_path)
+
+    def setup_frame_1(self):
+        self._frame_1 = frame = ttk.Frame(self)
+        frame.style = ttk.Style()
+        frame.style.theme_use("default")
+
+        frame.pack(anchor=Tkinter.CENTER, expand=Tkinter.YES)
+
+        entry = ttk.Entry(frame, width=27)
+        entry.grid(row=1, column=0, pady=10, columnspan=2)
+
+        button_1 = ttk.Button(frame, text="OK", command=lambda: self.passphrase_entered(entry.get()))
+        button_1.grid(row=2, column=0, ipadx=20, padx=0, pady=10, rowspan=1)
+
+        button_2 = ttk.Button(frame, text="Cancel", command=self.cancel)
+        button_2.grid(row=2, column=1, columnspan=1, ipadx=20, padx=0, pady=10, rowspan=1)
+
+    def passphrase_entered(self, passphrase):
+
+        try:
+            self.kpconf.backend.open_database(passphrase)
+            self._success = True
+            self.quit()
+        except WrongPassword:
+            self.quit()
+
+    def cancel(self):
+        self._success = None
+        self._frame_1.destroy()
+        self.quit()
