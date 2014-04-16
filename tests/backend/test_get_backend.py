@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from keepass_http.backends import (get_backend_by_file, libkeepass_backend, NoBackendError,
+from keepass_http.backends import (BaseBackend, libkeepass_backend, NoBackendError,
                                    python_keepass_backend)
 from keepass_http.core import Conf
 
 
 def test_get_backend_by_mimetype():
     Conf()
-    assert get_backend_by_file("foo.kdb") is python_keepass_backend.Backend
-    assert get_backend_by_file("foo.kdbx") is libkeepass_backend.Backend
+
+    assert isinstance(BaseBackend.get_by_filepath("foo.kdb"), python_keepass_backend.Backend)
+    assert isinstance(BaseBackend.get_by_filepath("foo.kdbx"), libkeepass_backend.Backend)
 
     with pytest.raises(NoBackendError):
-        get_backend_by_file("eggs.kdbfx")
+        BaseBackend.get_by_filepath("eggs.kdbfx")
 
     with pytest.raises(NoBackendError):
-        get_backend_by_file("/tmp/foo.gif")
+        BaseBackend.get_by_filepath("/tmp/foo.gif")

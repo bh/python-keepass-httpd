@@ -9,16 +9,16 @@ from . import BaseBackend, WrongPassword
 
 
 class Backend(BaseBackend):
-    #for_mimetype = "application/x-keepass-database-v1"
 
     def _ignore_entry(self, entry):
         if entry.uuid == "00000000000000000000000000000000":
             return True
         return False
 
-    def open_database(self):
+    def open_database(self, passphrase):
         try:
-            return kpdb.Database(self.database_path, self.passphrase)
+            kdb = kpdb.Database(self.database_path, passphrase)
+            self.database = kdb
         except ValueError:
             raise WrongPassword("Incorrect password")
 

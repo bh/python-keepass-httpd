@@ -16,10 +16,10 @@ class Backend(BaseBackend):
             return True
         return False
 
-    def open_database(self):
+    def open_database(self, passphrase):
         try:
-            with libkeepass.open(self.database_path, password=self.passphrase) as kdb:
-                return kdb
+            with libkeepass.open(self.database_path, password=passphrase) as kdb:
+                self.database = kdb
         except IOError:
             raise WrongPassword("Incorrect password")
 
