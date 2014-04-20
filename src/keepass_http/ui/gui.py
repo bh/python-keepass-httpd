@@ -11,13 +11,28 @@ from keepass_http.core import Conf
 
 log = logging.getLogger(__name__)
 
+class CenteredWindowMixIn(object):  # pragma: no cover
+    def center(self):
+        self.update_idletasks()
+        width = self.winfo_width()
+        frm_width = self.winfo_rootx() - self.winfo_x()
+        win_width =  width + 2 * frm_width
+        height = self.winfo_height()
+        titlebar_height = self.winfo_rooty() - self.winfo_y()
+        win_height = height + titlebar_height + frm_width
+        x = self.winfo_screenwidth() // 2 - win_width // 2
+        y = self.winfo_screenheight() // 2 - win_height // 2
+        self.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+        if self.attributes('-alpha') == 0:
+            self.attributes('-alpha', 1.0)
+        self.deiconify()
 
-class RequireAssociationDecision(Tkinter.Tk):  # pragma: no cover
+class RequireAssociationDecision(CenteredWindowMixIn, Tkinter.Tk):  # pragma: no cover
 
     @classmethod
     def require_client_name(cls):
         gui = cls()
-        gui.geometry()
+        gui.center()
         gui.mainloop()
         gui.destroy()
         return gui._client_name
@@ -85,7 +100,7 @@ class RequireAssociationDecision(Tkinter.Tk):  # pragma: no cover
         self._frame_2.grid()
 
 
-class OpenDatabase(Tkinter.Tk):  # pragma: no cover
+class OpenDatabase(CenteredWindowMixIn, Tkinter.Tk):  # pragma: no cover
 
     @classmethod
     def open(cls, max_try_count):
@@ -93,7 +108,7 @@ class OpenDatabase(Tkinter.Tk):  # pragma: no cover
         try_count = 1
         while try_count <= max_try_count:
             gui = cls()
-            gui.geometry()
+            gui.center()
             gui.mainloop()
             gui.destroy()
             if gui._success is True:
