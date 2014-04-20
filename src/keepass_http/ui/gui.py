@@ -138,6 +138,7 @@ class OpenDatabase(CenteredWindowMixIn, Tkinter.Tk):  # pragma: no cover
 
         entry = ttk.Entry(frame, width=27)
         entry.grid(row=1, column=0, pady=10, columnspan=2)
+        entry.focus_set()
 
         button_1 = ttk.Button(frame, text="OK", command=lambda: self.passphrase_entered(entry.get()))
         button_1.grid(row=2, column=0, ipadx=20, padx=0, pady=10, rowspan=1)
