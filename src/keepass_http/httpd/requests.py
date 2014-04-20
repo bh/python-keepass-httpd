@@ -72,10 +72,14 @@ class Request(object):
 
     def authenticate(self):
         client_id = self.get_client_id()
+
         log.info("Authenticate client %s" % client_id)
 
-        key = Conf().backend.get_config(client_id)
-        if not key:
+        key = Conf().backend.get_key_for_client(client_id)
+        # FIXME: Fix unit tests
+        # Special case when methods used in unit test are not mocked correctly.
+        # <TestAES name='AESCipher().key' id='25131856'> is not None :S
+        if key is None or not isinstance(key, basestring):
             raise AuthenticationError()
 
         nonce = self.request_dict['Nonce']
@@ -93,12 +97,12 @@ class Request(object):
     def set_verifier(self, new_client_id=None):
         if new_client_id:
             client_id = new_client_id
-            key = Conf().backend.get_config(client_id)
+            key = Conf().backend.get_key_for_client(client_id)
             if not key:
                 raise AuthenticationError()
         else:
             client_id = self.get_client_id()
-            key = self.kpc.key
+            key = self.kpc.get_key()
 
         nonce = AESCipher.generate_nonce()
         response_kpc = AESCipher(key, nonce)

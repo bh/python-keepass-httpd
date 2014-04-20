@@ -8,7 +8,7 @@ from keepass_http.ui import cli
 
 class TestBackend(mock.Mock):
     create_config_key = mock.Mock(return_value=None)
-    get_config = mock.Mock(return_value="NDI2MjYyOTI0NDA1MjMyNDQ1OTg5ODc2MDYwNjY4NDI=")
+    get_key_for_client = mock.Mock(return_value="NDI2MjYyOTI0NDA1MjMyNDQ1OTg5ODc2MDYwNjY4NDI=")
 
 
 class TestConf(mock.Mock):
