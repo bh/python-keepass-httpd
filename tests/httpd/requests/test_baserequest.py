@@ -117,15 +117,14 @@ def test_baserequest_authenticate_with_kpc_valid(mock_get_config, mock_kpc):
 
 @mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch("keepass_http.httpd.requests.AESCipher")
-@mock.patch.object(TestBackend, "get_config")
-def test_baserequest_authenticate_with_kpc_get_kpc_authenticated(mock_get_config, mock_kpc):
-    mock_get_config.return_value = "known key"
-
+@mock.patch.object(TestBackend, "get_key_for_client")
+def test_baserequest_authenticate_with_kpc_authenticated(mock_get_key_for_client, mock_kpc):
+    mock_get_key_for_client.return_value = "known key"
     aes = TestAES()
     mock_kpc.return_value = aes
 
     aes.is_valid = mock.Mock(return_value=True)
-    aes._kpc = mock.Mock(return_value=aes)
+    aes.get_key = mock.Mock(return_value="c29tZSBrbm93biBrZXk=")
 
     request_dict = {"Id": "some client name",
                     "Key": "some known key",
@@ -133,7 +132,7 @@ def test_baserequest_authenticate_with_kpc_get_kpc_authenticated(mock_get_config
                     "Verifier": "some verifier"}
 
     request = ImplementedRequest()
-    request.request_dict.update(request_dict)
+    request(request_dict)
     request.authenticate()
     request.kpc
 

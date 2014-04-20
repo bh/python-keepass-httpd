@@ -28,3 +28,6 @@ class AESCipher(object):
     def generate_nonce():
         nonce = str(random.randint(1, 10 ** 16)).zfill(16)
         return base64.b64encode(nonce)
+
+    def get_key(self):
+        return base64.b64encode(self.key)
