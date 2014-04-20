@@ -59,11 +59,10 @@ def main():
     kpconf.select_ui(ui)
     kpconf.set_loglevel(loglevel)
 
-    # server
-    #server = KeepassHTTPServer(host, int(port))
-
     # backend
-    backend_class = backends.get_backend_by_file(database_path)
+    backend = backends.BaseBackend.get_by_filepath(database_path)
+
+    kpconf.set_backend(backend)
 
     try_count = 1
     max_try_count = 3
@@ -73,7 +72,7 @@ def main():
             "Please enter the passphrase for database %s: \n" %
             database_path)
         try:
-            backend = backend_class(database_path, passphrase)
+            backend = backend.open_database(passphrase)
         except backends.WrongPassword:
             log.info(
                 "Wrong passphrase, please try again. (attempt [%s/%s]" %
@@ -86,8 +85,6 @@ def main():
 
     if success is False:
         sys.exit("Wrong passphrase after %d attempts" % max_try_count)
-
-    kpconf.set_backend(backend)
 
     # config daemon
     run_server = partial(app.run, debug=False, host=host, port=int(port))

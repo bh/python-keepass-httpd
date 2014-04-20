@@ -17,7 +17,9 @@ def _move_test_file_to_tmpdir(_tmpdir, file_name):
 def test_fetch_entries_empty_database(tmpdir):
     test_database = _move_test_file_to_tmpdir(tmpdir, "empty.kdb")
 
-    backend = Backend(test_database, "abcd123")
+    backend = Backend(test_database)
+    backend.open_database("abcd123")
+
     backend.sync_entries()
     assert len(backend.entries.items) == 0
 
@@ -25,7 +27,9 @@ def test_fetch_entries_empty_database(tmpdir):
 def test_create_config(tmpdir):
     test_database = _move_test_file_to_tmpdir(tmpdir, "test_create_config.kdb")
 
-    backend = Backend(test_database, "abcd123")
+    backend = Backend(test_database)
+    backend.open_database("abcd123")
+
     backend.sync_entries()
     assert len(backend.entries.items) == 0
 
@@ -40,7 +44,9 @@ def test_create_config(tmpdir):
 
 def test_get_config(tmpdir):
     test_database = _move_test_file_to_tmpdir(tmpdir, "test_get_config.kdb")
-    backend = Backend(test_database, "abcd123")
+
+    backend = Backend(test_database)
+    backend.open_database("abcd123")
 
     # existing associated client
     assert backend.get_config("test_name") == "test_key"
@@ -52,53 +58,54 @@ def test_get_config(tmpdir):
 def test_create_login(tmpdir):
     test_database = _move_test_file_to_tmpdir(tmpdir, "test_create_login.kdb")
 
-    test_databse_passphrase = "abcd123"
+    backend = Backend(test_database)
+    backend.open_database("abcd123")
 
-    x = Backend(test_database, test_databse_passphrase)
-
-    x.sync_entries()
-    assert len(x.entries.items) == 1
+    backend.sync_entries()
+    assert len(backend.entries.items) == 1
     # valid logins
-    x.create_login(u"test_name", "bla@gmail.com", "geheim", "https://www.google.com/login")
+    backend.create_login(u"test_name", "bla@gmail.com", "geheim", "https://www.google.com/login")
     # 2 accounts, same domain
-    x.create_login(u"test_name", "blubb@gmx.net", "geheim2", "https://gmx.net/login")
-    x.create_login(u"test_name", "blubb2@gmx.net", "geheim3", "https://gmx.net/login")
+    backend.create_login(u"test_name", "blubb@gmx.net", "geheim2", "https://gmx.net/login")
+    backend.create_login(u"test_name", "blubb2@gmx.net", "geheim3", "https://gmx.net/login")
     # another login
-    x.create_login(u"test_name", "asdasd@web.de", "geheim4", "http://web.de/login/form.php")
+    backend.create_login(u"test_name", "asdasd@web.de", "geheim4", "http://web.de/login/form.php")
     # x.get_entries(purge_cache=True)
 
-    assert len(x.entries.items) == 5
+    assert len(backend.entries.items) == 5
 
     # FIXME: remove config for client!
-    del x.entries.items[0]
+    del backend.entries.items[0]
     # first one is the client config (key)
 
-    assert x.entries.items[0] == EntrySpec(login="bla@gmail.com",
-                                           url='https://www.google.com/login',
-                                           password='geheim',
-                                           title="www.google.com",
-                                           uuid="")
-    assert x.entries.items[1] == EntrySpec(login="blubb@gmx.net",
-                                           url='https://gmx.net/login',
-                                           password='geheim2',
-                                           title="gmx.net",
-                                           uuid="")
-    assert x.entries.items[2] == EntrySpec(login="blubb2@gmx.net",
-                                           url='https://gmx.net/login',
-                                           password='geheim3',
-                                           title="gmx.net",
-                                           uuid="")
-    assert x.entries.items[3] == EntrySpec(login="asdasd@web.de",
-                                           url='http://web.de/login/form.php',
-                                           password='geheim4',
-                                           title="web.de",
-                                           uuid="")
+    assert backend.entries.items[0] == EntrySpec(login="bla@gmail.com",
+                                                 url='https://www.google.com/login',
+                                                 password='geheim',
+                                                 title="www.google.com",
+                                                 uuid="")
+    assert backend.entries.items[1] == EntrySpec(login="blubb@gmx.net",
+                                                 url='https://gmx.net/login',
+                                                 password='geheim2',
+                                                 title="gmx.net",
+                                                 uuid="")
+    assert backend.entries.items[2] == EntrySpec(login="blubb2@gmx.net",
+                                                 url='https://gmx.net/login',
+                                                 password='geheim3',
+                                                 title="gmx.net",
+                                                 uuid="")
+    assert backend.entries.items[3] == EntrySpec(login="asdasd@web.de",
+                                                 url='http://web.de/login/form.php',
+                                                 password='geheim4',
+                                                 title="web.de",
+                                                 uuid="")
 
 
 def test_get_search_entries(tmpdir):
     test_database = _move_test_file_to_tmpdir(tmpdir, "test_search_for_entries.kdb")
 
-    backend = Backend(test_database, "abcd123")
+    backend = Backend(test_database)
+    backend.open_database("abcd123")
+
     backend.sync_entries()
     assert len(backend.entries.items) == 5
 

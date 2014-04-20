@@ -57,19 +57,37 @@ class Entries:
         self.items = []
 
 
-class BaseBackend:
+class BaseBackend(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, database_path, passphrase):
+    def __init__(self, database_path):
 
         self.database_path = database_path
-        self.passphrase = passphrase
-        self.database = self.open_database()
+        self.passphrase = None
+        self.database = None
 
         self.entries = Entries()
 
+    @classmethod
+    def get_by_filepath(cls, filepath):
+        mimetype = mimetypes.guess_type(filepath)[0]
+
+        if mimetype is None:
+            raise NoBackendError("Unknown mimetype for file: %s" % filepath)
+
+        backends = list(
+            pkg_resources.iter_entry_points(
+                group='keepass_http_backends',
+                name=mimetype))
+
+        if not len(backends):
+            raise NoBackendError("No registered backend for file: %s" % filepath)
+
+        backend = backends.pop().load()
+        return backend(database_path=filepath)
+
     @abc.abstractmethod
-    def open_database(self):
+    def open_database(self, database_path):
         """
         """
 
@@ -96,17 +114,3 @@ class BaseBackend:
     def get_config(self):
         """
         """
-
-
-def get_backend_by_file(filepath):
-    mimetype = mimetypes.guess_type(filepath)[0]
-
-    if mimetype is None:
-        raise NoBackendError("No backend for file: %s" % filepath)
-
-    backends = list(pkg_resources.iter_entry_points(group='keepass_http_backends', name=mimetype))
-
-    if not len(backends):
-        raise NoBackendError("No backend for file: %s" % filepath)
-
-    return backends.pop().load()
