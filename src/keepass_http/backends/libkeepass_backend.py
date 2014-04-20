@@ -110,7 +110,7 @@ class Backend(BaseBackend):
                        password=password,
                        url=url)
 
-    def get_config(self, client_name):
+    def get_key_for_client(self, client_name):
         self.sync_entries()
         try:
             entry = self.entries.search_by_field("title", client_name)

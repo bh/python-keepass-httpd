@@ -49,10 +49,10 @@ def test_get_config(tmpdir):
     backend.open_database("abcd123")
 
     # existing associated client
-    assert backend.get_config("test_name") == "test_key"
+    assert backend.get_key_for_client("test_name") == "test_key"
 
     # unknown client
-    assert backend.get_config("test_unknown") is None
+    assert backend.get_key_for_client("test_unknown") is None
 
 
 def test_create_login(tmpdir):

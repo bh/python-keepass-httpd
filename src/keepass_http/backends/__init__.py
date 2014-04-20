@@ -111,6 +111,6 @@ class BaseBackend(object):
         """
 
     @abc.abstractmethod
-    def get_config(self):
+    def get_key_for_client(self):
         """
         """
