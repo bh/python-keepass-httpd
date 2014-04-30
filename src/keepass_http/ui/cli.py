@@ -16,7 +16,7 @@ class RequireAssociationDecision(object):
     @staticmethod
     def require_client_name():
         client_name = None
-        if query_yes_no("Should be the client accepted?", default="no"):
+        if query_yes_no("Should be the client accepted?", default="no") == "yes":
             # TODO: handle an empty string
             client_name = raw_input("Give the client a name: ")
         return client_name
