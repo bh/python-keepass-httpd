@@ -67,6 +67,20 @@ def test_create_config(tmpdir):
                                                     uuid="")
 
 
+def test_root_node_has_a_different_name_than_root(tmpdir):
+    """
+    Ensure that we can handle the root node which has a different name than "Root"
+
+    """
+    test_database = _move_test_file_to_tmpdir(tmpdir, "root_has_a_different_name.kdbx")
+
+    backend = Backend(test_database)
+    backend.open_database("1234")
+
+    backend.create_config_key("test_name", "test_key")
+    assert len(backend.entries.items) == 1
+
+
 def test_get_config(tmpdir):
     test_database = _move_test_file_to_tmpdir(tmpdir, "test_get_config.kdbx")
 
