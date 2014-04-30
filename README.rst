@@ -1,9 +1,9 @@
 Python Keepass HTTPd
 ====================
-.. image:: https://coveralls.io/repos/bhedrich/python-keepass-httpd/badge.png
-   :target: https://coveralls.io/r/bhedrich/python-keepass-httpd
-.. image:: https://travis-ci.org/bhedrich/python-keepass-httpd.png?branch=master
-   :target: https://travis-ci.org/bhedrich/python-keepass-httpd
+.. image:: https://coveralls.io/repos/bh/python-keepass-httpd/badge.png
+   :target: https://coveralls.io/r/bh/python-keepass-httpd
+.. image:: https://travis-ci.org/bh/python-keepass-httpd.png?branch=master
+   :target: https://travis-ci.org/bh/python-keepass-httpd
 
 Description
 -----------
