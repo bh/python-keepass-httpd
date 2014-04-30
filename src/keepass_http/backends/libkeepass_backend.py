@@ -50,9 +50,9 @@ class Backend(BaseBackend):
 
     def add_entry(self, path, title, username="", password="", url="", notes=""):
         # handle groups - check if exists and if not, create group
-        xpathstring = '/KeePassFile/Root/Group[Name="Root"]'
+        # get the first group in the root node
+        xpathstring = '/KeePassFile/Root/Group'
 
-        deepest_group = 0
         # search if group path exists, if not, create it
         groups = path.split("/")
         for group in groups:
