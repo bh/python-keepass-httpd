@@ -1,9 +1,16 @@
 language: python
+
+env:
+  - TOX_ENV=py27
+
 python:
   - "2.7"
-install: 
-  - "make build_test_env"
-script:  
-  - "make run_tests"
-after_success: 
+
+install:
+  - "pip install tox==1.7.1"
+
+script:
+  - "tox -e $TOX_ENV"
+
+after_success:
   - "coveralls"
