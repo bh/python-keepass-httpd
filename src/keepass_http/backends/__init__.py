@@ -22,10 +22,10 @@ class EntrySpec:
         self.url = url
 
     def to_json_dict(self, kpc):
-        return {"Name": kpc.encrypt(self.title),
-                "Login": kpc.encrypt(self.username),
-                "Uuid": kpc.encrypt(self.uuid),
-                "Password": kpc.encrypt(self.password),
+        return {"Name": kpc.encrypt(self.title.encode("utf-8")),
+                "Login": kpc.encrypt(self.username.encode("utf-8")),
+                "Uuid": kpc.encrypt(self.uuid.encode("utf-8")),
+                "Password": kpc.encrypt(self.password.encode("utf-8")),
                 }
 
     def __eq__(self, other):
