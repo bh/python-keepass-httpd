@@ -19,11 +19,11 @@ class TestConf(mock.Mock):
 @mock.patch("keepass_http.httpd.requests.Conf", TestConf)
 @mock.patch.object(AESCipher, 'generate_nonce')
 @mock.patch.object(TestBackend, "create_config_key")
-@mock.patch.object(cli.RequireAssociationDecision, "require_client_name")
+@mock.patch.object(cli.ClientConnectDecisionUi, "do")
 def test_associaterequest_successfull(
-        mock_require_client_name, mock_create_config_key, mock_generate_nonce):
+        mock_do, mock_create_config_key, mock_generate_nonce):
     test_client_name = "test client name"
-    mock_require_client_name.return_value = test_client_name
+    mock_do.return_value = test_client_name
     mock_generate_nonce.return_value = "OTYwOTgzNjI0MzcxMzQ5MQ=="
 
     test_dict = {"Key": "Some 64 encoded key",
@@ -42,9 +42,9 @@ def test_associaterequest_successfull(
                                                    'Some 64 encoded key')
 
 
-@mock.patch.object(cli.RequireAssociationDecision, "require_client_name")
-def test_associaterequest_no_accept(mock_require_client_name):
-    mock_require_client_name.return_value = None
+@mock.patch.object(cli.ClientConnectDecisionUi, "do")
+def test_associaterequest_no_accept(mock_do):
+    mock_do.return_value = None
 
     test_dict = {"Key": "Some 64 encoded key"}
     request = requests.AssociateRequest()
