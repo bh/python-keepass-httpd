@@ -14,7 +14,7 @@ from keepass_http.utils import get_absolute_path_to_resource
 log = logging.getLogger(__name__)
 
 
-def _get_app():
+def _get_app():  # pragma: no cover
     try:
         app = QtGui.QApplication(sys.argv)
     except RuntimeError:
@@ -23,7 +23,7 @@ def _get_app():
     return app
 
 
-def _read_ui_file(path, parent):
+def _read_ui_file(path, parent):  # pragma: no cover
     """
     Read a *.ui file in src/keepass_http/conf and return the root widget as QT object
     defined in ui file.
@@ -42,7 +42,7 @@ def _read_ui_file(path, parent):
     return widget
 
 
-class RequireDatabasePassphraseUi(QtGui.QMainWindow):
+class RequireDatabasePassphraseUi(QtGui.QMainWindow):  # pragma: no cover
 
     def __init__(self, *args, **kwargs):
         QtGui.QMainWindow.__init__(*(self,) + args)
@@ -83,7 +83,7 @@ class RequireDatabasePassphraseUi(QtGui.QMainWindow):
         return window._success
 
 
-class ClientConnectDecisionUi(QtGui.QMainWindow):
+class ClientConnectDecisionUi(QtGui.QMainWindow):  # pragma: no cover
 
     def __init__(self, *args, **kwargs):
         QtGui.QMainWindow.__init__(*(self,) + args)
