@@ -19,9 +19,9 @@ style:
 	autopep8 --aggressive --max-line-length=100 --indent-size=4 \
 		 --in-place -r src/* tests/*
 	@echo "Formatting python imports..."
-	isort -l 100 -rc .	
+	isort -l 100 -rc src/ tests/
 	@echo "Pyflakes..."
-	find . -name "*.py" -exec pyflakes {} \;
+	find src/ -name "*.py" -exec pyflakes {} \;
 	
 clean:
 	-find . -name __pycache__ -type d | xargs rm -rf

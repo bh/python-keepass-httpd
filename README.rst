@@ -26,6 +26,22 @@ Use `Yaourt <http://archlinux.fr/yaourt-en/>`_ to install ``python-keepass-httpd
 
 Yaourt will install the package and its dependencies.
 
+
+on all other Unix/Linux systems
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use ``pip`` to install:
+
+.. code:: bash
+
+    $ pip install 'keepass_http[GUI]' --use-mirrors
+
+or without GUI support:
+
+.. code:: bash
+
+    $ pip install keepass_http --use-mirrors
+
 Usage
 -----
 
@@ -51,7 +67,7 @@ The output should be look like this:
       -p --port PORT            Specify a port [default: 19455]
       -h --host HOST            Specify a host [default: 127.0.0.1]
       -l --loglevel LOGLEVEL    Loglevel to use [default: INFO]
-      --gui                     Use TKinter for a graphical interface
+      --gui                     Use QT (PySide) for a graphical interface
 
 
 Starting the server

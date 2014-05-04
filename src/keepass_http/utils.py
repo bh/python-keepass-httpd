@@ -9,19 +9,23 @@ import pkg_resources
 
 def has_gui_support():
     """
-    If this fails your Python may not be configured for Tk
+    If this fails your Python does not have PySide install.
+
+    To install it:
+        - pip install -e ".[GUI]"
+        or
+        - pip install keepass_http[GUI]
 
     """
     try:
-        import Tkinter
+        import PySide
+        PySide  # shut up pyflakes
     except ImportError:
         return False
     else:
         return True
 
 # http://stackoverflow.com/a/3041990
-
-
 def query_yes_no(question, default="yes"):  # pragma: no cover
     """Ask a yes/no question via raw_input() and return their answer.
 

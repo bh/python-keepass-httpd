@@ -38,7 +38,7 @@ def main():
     kpconf = Conf()
 
     if has_gui_support():
-        doc_ += "  --gui                     Use TKinter for a graphical interface"
+        doc_ += "  --gui".ljust(28) + "Use QT (PySide) for a graphical interface"
 
     # handle arguments
     arguments = docopt.docopt(doc_)
@@ -59,13 +59,19 @@ def main():
     kpconf.select_ui(ui)
     kpconf.set_loglevel(loglevel)
 
+    if not has_gui_support():
+        log.debug("\nIt seems that you don't have GUI support installed. Install it with:\n"
+                  "  $ pip install -e '.[GUI]'\n"
+                  "or\n"
+                  "  $ pip install keepass_http[GUI]\n")
+
     # backend
     backend = backends.BaseBackend.get_by_filepath(database_path)
     kpconf.set_backend(backend)
 
-    success = kpconf.get_selected_ui().OpenDatabase.open(MAX_TRY_COUNT)
+    success = kpconf.get_selected_ui().RequireDatabasePassphraseUi.do(MAX_TRY_COUNT)
     if success is False:
-        sys.exit("Wrong passphrase after %d attempts" % MAX_TRY_COUNT)
+        sys.exit("Wrong or no passphrase")
 
     # config daemon
     run_server = partial(app.run, debug=False, host=host, port=int(port))

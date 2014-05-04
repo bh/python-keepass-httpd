@@ -11,10 +11,10 @@ from keepass_http.utils import query_yes_no
 log = logging.getLogger(__name__)
 
 
-class RequireAssociationDecision(object):
+class ClientConnectDecisionUi(object):
 
     @staticmethod
-    def require_client_name():
+    def do():
         client_name = None
         if query_yes_no("Should be the client accepted?", default="no") == "yes":
             # TODO: handle an empty string
@@ -22,10 +22,10 @@ class RequireAssociationDecision(object):
         return client_name
 
 
-class OpenDatabase(object):
+class RequireDatabasePassphraseUi(object):
 
     @staticmethod
-    def open(max_try_count):
+    def do(max_try_count):
         kpconf = Conf()
         try_count = 1
         success = False

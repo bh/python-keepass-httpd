@@ -134,7 +134,7 @@ class AssociateRequest(Request):
 
     def process(self):
         kpconf = Conf()
-        new_client_id = kpconf.get_selected_ui().RequireAssociationDecision.require_client_name()
+        new_client_id = kpconf.get_selected_ui().ClientConnectDecisionUi.do()
         if new_client_id:
             kpconf.backend.create_config_key(new_client_id, self.request_dict["Key"])
             self.response_dict.update({"Id": new_client_id,

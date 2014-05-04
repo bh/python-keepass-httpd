@@ -22,6 +22,9 @@ setup(name="keepass_http",
                         "keepass==1.2",
                         "libkeepass==0.1.2",
                         "lxml==3.2.1"),
+      extras_require = {
+        'GUI':  ("PySide==1.2.2",)
+      },
       entry_points={
           'console_scripts': [
               'python-keepass-httpd = keepass_http.scripts.python_keepass_httpd:main'
