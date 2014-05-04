@@ -1,2 +1,2 @@
-include src/keepass_http/conf/logging.conf
+recursive-include src/keepass_http/conf *.ui *.conf
 include README.rst
