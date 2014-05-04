@@ -12,6 +12,6 @@ def test_entry_spec_unicode():
     kpc = AESCipher(saved_key, request_nonce)
 
     entry = EntrySpec(uuid=u"1", title=u"ä", login=u"ü",
-                  password=u"ö", url=u"http://www.fuß.de/login/form.html")
+                      password=u"ö", url=u"http://www.fuß.de/login/form.html")
 
     assert entry.to_json_dict(kpc)
