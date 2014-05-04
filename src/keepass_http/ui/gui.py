@@ -1,161 +1,119 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
 
 import logging
-import Tkinter
-import tkMessageBox
-import ttk
+import os
+import sys
+from functools import partial
+
+from PySide import QtCore, QtGui, QtUiTools
 
 from keepass_http.backends import WrongPassword
 from keepass_http.core import Conf
+from keepass_http.utils import get_absolute_path_to_resource
 
 log = logging.getLogger(__name__)
 
-class CenteredWindowMixIn(object):  # pragma: no cover
-    def center(self):
-        self.update_idletasks()
-        width = self.winfo_width()
-        frm_width = self.winfo_rootx() - self.winfo_x()
-        win_width =  width + 2 * frm_width
-        height = self.winfo_height()
-        titlebar_height = self.winfo_rooty() - self.winfo_y()
-        win_height = height + titlebar_height + frm_width
-        x = self.winfo_screenwidth() // 2 - win_width // 2
-        y = self.winfo_screenheight() // 2 - win_height // 2
-        self.geometry('{}x{}+{}+{}'.format(width, height, x, y))
-        if self.attributes('-alpha') == 0:
-            self.attributes('-alpha', 1.0)
-        self.deiconify()
 
-class RequireAssociationDecision(CenteredWindowMixIn, Tkinter.Tk):  # pragma: no cover
+def _get_app():
+    try:
+        app = QtGui.QApplication(sys.argv)
+    except RuntimeError:
+        # RuntimeError: A QApplication instance already exists.
+        app = QtCore.QCoreApplication.instance()
+    return app
+
+
+def _read_ui_file(path, parent):
+    """
+    Read a *.ui file in src/keepass_http/conf and return the root widget as QT object
+    defined in ui file.
+
+    """
+
+    ui_file_path = get_absolute_path_to_resource(os.path.join("conf", path))
+
+    ui_file_obj = QtCore.QFile(ui_file_path)
+    ui_file_obj.open(QtCore.QFile.ReadOnly)
+
+    loader = QtUiTools.QUiLoader()
+    widget = loader.load(ui_file_obj, parent)
+
+    ui_file_obj.close()
+    return widget
+
+
+class RequireDatabasePassphraseUi(QtGui.QMainWindow):
+
+    def __init__(self, *args, **kwargs):
+        QtGui.QMainWindow.__init__(*(self,) + args)
+        # set success to True if the passphrase was correct and we are now connected to
+        # the keepassdatabase.
+        self._success = None
+
+        self.ui = _read_ui_file("require_passphrase.ui", self)
+
+        self.setCentralWidget(self.ui)
+
+        self.ui.buttons.accepted.connect(self.try_authenticate)
+        self.ui.buttons.rejected.connect(partial(self._exit, False))
+
+    def try_authenticate(self, *args):
+        passphrase = self.ui.passphrase.text()
+        try:
+            Conf().backend.open_database(passphrase)
+        except WrongPassword:
+            statusbar = self.ui.statusBar()
+            msg = "Wrong passphrase, try again please."
+            statusbar.showMessage(msg)
+            log.warning(msg)
+        else:
+            log.info("Passphrase %s accepted" % "*" * len(passphrase))
+            self._exit(True)
+
+    def _exit(self, success):
+        self._success = success
+        self.ui.close()
 
     @classmethod
-    def require_client_name(cls):
-        gui = cls()
-        gui.center()
-        gui.mainloop()
-        gui.destroy()
-        return gui._client_name
+    def do(cls, unused_try_count):
+        app = _get_app()
+        window = cls()
+        window.ui.show()
+        app.exec_()
+        return window._success
 
-    def __init__(self):
-        Tkinter.Tk.__init__(self)
-        self.setup_frame_1()
-        self.title("Setup new connection with browser")
+
+class ClientConnectDecisionUi(QtGui.QMainWindow):
+
+    def __init__(self, *args, **kwargs):
+        QtGui.QMainWindow.__init__(*(self,) + args)
+        # save the entered client name for further processing
         self._client_name = None
 
-    def setup_frame_1(self):
-        self._frame_1 = frame = ttk.Frame(self)
-        frame.style = ttk.Style()
-        frame.style.theme_use("default")
+        # baseui
+        self.baseui = _read_ui_file("client_connect.ui", self)
+        # dialog
+        self.dialog = _read_ui_file("should_connect_dialog.ui", self)
+        self.dialog.show()
 
-        frame.pack(anchor=Tkinter.CENTER, expand=Tkinter.YES)
+        if self.dialog.exec_() == QtGui.QDialog.Accepted:
+            self.baseui.show()
+            self.baseui.buttons.accepted.connect(self.name_entered)
+            self.baseui.buttons.rejected.connect(self._exit)
 
-        label = ttk.Label(frame, text="Create a new association with the browser?")
-        label.grid(row=0, column=0, rowspan=1, pady=10, padx=10, columnspan=2)
-
-        button_1 = ttk.Button(frame, text="Yes", command=self.accept_client)
-        button_1.grid(row=1, column=0, ipadx=20, padx=0, pady=10)
-
-        button_2 = ttk.Button(frame, text="No", command=self.quit)
-        button_2.grid(row=1, column=1, ipadx=20, padx=0, pady=10)
-
-    def setup_frame_2(self):
-        self._frame_2 = frame = ttk.Frame(self)
-        frame.style = ttk.Style()
-        frame.style.theme_use("default")
-
-        frame.pack(anchor=Tkinter.CENTER, expand=Tkinter.YES)
-
-        label = ttk.Label(frame, text="Enter a name for the new connection:")
-        label.grid(row=0, column=0, pady=10, padx=10, columnspan=2)
-
-        entry = ttk.Entry(frame, width=27)
-        entry.grid(row=1, column=0, pady=10, columnspan=2)
-
-        button_1 = ttk.Button(frame, text="OK", command=lambda: self.name_entered(entry.get()))
-        button_1.grid(row=2, column=0, ipadx=20, padx=0, pady=10, rowspan=1)
-
-        button_2 = ttk.Button(frame, text="Cancel", command=self.quit)
-        button_2.grid(row=2, column=1, columnspan=1, ipadx=20, padx=0, pady=10, rowspan=1)
-
-    @staticmethod
-    def validate_clientname(name):
-        # TODO: needs more checks (special chars etc.)
-        return name.strip() != ""
-
-    def name_entered(self, client_name):
-        if self.validate_clientname(client_name):
-            self._client_name = client_name
-            self.quit()
         else:
-            should_retry = tkMessageBox.askretrycancel(title="invalid name",
-                                                       message="The name you enterd is not valid.")
-            if not should_retry:
-                self._client_name = None
-                self.quit()
+            self._exit()
 
-    def accept_client(self):
-        self._frame_1.destroy()
-        self.setup_frame_2()
-        self._frame_2.grid()
+    def _exit(self):
+        self.baseui.close()
 
-
-class OpenDatabase(CenteredWindowMixIn, Tkinter.Tk):  # pragma: no cover
+    def name_entered(self, *args):
+        self._client_name = self.baseui.client_name.text()
+        self._exit()
 
     @classmethod
-    def open(cls, max_try_count):
-        success = False
-        try_count = 1
-        while try_count <= max_try_count:
-            gui = cls()
-            gui.center()
-            gui.mainloop()
-            gui.destroy()
-            if gui._success is True:
-                log.info("Passphrase accepted")
-                success = True
-                break
-            if gui._success is None:
-                break
-            else:
-                try_count += 1
-                continue
-        return success
-
-    def __init__(self):
-        Tkinter.Tk.__init__(self)
-        self.kpconf = Conf()
-        self._success = False
-        self.setup_frame_1()
-        self.title("Enter the passphrase for %s" % self.kpconf.backend.database_path)
-
-    def setup_frame_1(self):
-        self._frame_1 = frame = ttk.Frame(self)
-        frame.style = ttk.Style()
-        frame.style.theme_use("default")
-
-        frame.pack(anchor=Tkinter.CENTER, expand=Tkinter.YES)
-
-        entry = ttk.Entry(frame, width=27)
-        entry.grid(row=1, column=0, pady=10, columnspan=2)
-        entry.focus_set()
-
-        button_1 = ttk.Button(frame, text="OK", command=lambda: self.passphrase_entered(entry.get()))
-        button_1.grid(row=2, column=0, ipadx=20, padx=0, pady=10, rowspan=1)
-
-        button_2 = ttk.Button(frame, text="Cancel", command=self.cancel)
-        button_2.grid(row=2, column=1, columnspan=1, ipadx=20, padx=0, pady=10, rowspan=1)
-
-    def passphrase_entered(self, passphrase):
-
-        try:
-            self.kpconf.backend.open_database(passphrase)
-            self._success = True
-            self.quit()
-        except WrongPassword:
-            self.quit()
-
-    def cancel(self):
-        self._success = None
-        self._frame_1.destroy()
-        self.quit()
+    def do(cls):
+        app = _get_app()
+        window = cls()
+        app.exec_()
+        return window._client_name
