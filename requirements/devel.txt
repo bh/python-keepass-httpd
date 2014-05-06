@@ -7,3 +7,6 @@ git+git://github.com/pyflakes/pyflakes.git@0.8.1#egg=pyflakes
 bumpversion==0.4.1
 wheel==0.22.0
 tox==1.7.1
+
+PySide==1.2.2
+pytest-qt==1.0.2

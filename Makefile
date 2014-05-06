@@ -2,7 +2,7 @@ PIP=pip
 RUN_TESTS=py.test --cov=keepass_http --cov-report=term-missing --cov-report html
 
 dev_env:
-	$(PIP) install -e .
+	$(PIP) install -e .[GUI]
 	$(PIP) install -r requirements/devel.txt
 	
 run_tests:
