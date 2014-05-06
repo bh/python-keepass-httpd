@@ -90,17 +90,16 @@ class ClientConnectDecisionUi(QtGui.QMainWindow):  # pragma: no cover
         # save the entered client name for further processing
         self._client_name = None
 
-        # baseui
         self.baseui = _read_ui_file("client_connect.ui", self)
-        # dialog
-        self.dialog = _read_ui_file("should_connect_dialog.ui", self)
-        self.dialog.show()
 
-        if self.dialog.exec_() == QtGui.QDialog.Accepted:
+        self.dialog = _read_ui_file("should_connect_dialog.ui", self)
+        self.dialog.finished.connect(self.should_connect_with_client)
+
+    def should_connect_with_client(self, decision):
+        if decision == QtGui.QDialog.Accepted:
             self.baseui.show()
             self.baseui.buttons.accepted.connect(self.name_entered)
             self.baseui.buttons.rejected.connect(self._exit)
-
         else:
             self._exit()
 
@@ -115,5 +114,6 @@ class ClientConnectDecisionUi(QtGui.QMainWindow):  # pragma: no cover
     def do(cls):
         app = _get_app()
         window = cls()
+        window.dialog.show()
         app.exec_()
         return window._client_name
