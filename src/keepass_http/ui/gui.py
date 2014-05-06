@@ -67,7 +67,7 @@ class RequireDatabasePassphraseUi(QtGui.QMainWindow):  # pragma: no cover
             statusbar.showMessage(msg)
             log.warning(msg)
         else:
-            log.info("Passphrase %s accepted" % "*" * len(passphrase))
+            log.info("Passphrase %s accepted" % ("*" * len(passphrase)))
             self._exit(True)
 
     def _exit(self, success):
