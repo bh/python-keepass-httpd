@@ -4,6 +4,8 @@ Python Keepass HTTPd
    :target: http://badge.fury.io/py/keepass_http
 .. image:: https://pypip.in/d/keepass_http/badge.png
    :target: https://crate.io/packages/keepass_http/
+.. image:: https://requires.io/github/bh/python-keepass-httpd/requirements.png?branch=master
+   :target: https://requires.io/github/bh/python-keepass-httpd/requirements/?branch=master
 .. image:: https://travis-ci.org/bh/python-keepass-httpd.png?branch=master
    :target: https://travis-ci.org/bh/python-keepass-httpd
 .. image:: https://coveralls.io/repos/bh/python-keepass-httpd/badge.png
