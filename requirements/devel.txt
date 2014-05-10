@@ -1,11 +1,11 @@
 -r testing.txt
 ipdb==0.8
 ipython==2.0.0
-autopep8==1.0
-isort==3.6.2
-git+git://github.com/pyflakes/pyflakes.git@0.8.1#egg=pyflakes
+autopep8==1.0.2
+isort==3.8.0
+pyflakes==0.8.1
 bumpversion==0.4.1
-wheel==0.22.0
+wheel==0.23.0
 tox==1.7.1
 
 PySide==1.2.2
