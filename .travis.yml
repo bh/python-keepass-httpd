@@ -1,16 +1,26 @@
 language: python
 
+virtualenv:
+    system_site_packages: true
+
+before_script:
+    - sudo apt-get install -qq python-pyside
+    - "export DISPLAY=:99.0"
+    - "sh -e /etc/init.d/xvfb start"
+    - sleep 3
+
 env:
-  - TOX_ENV=py27
+    - TOX_ENV=py27 TOX_EXTRA_ARGS=""
+    - TOX_ENV=py27-withgui TOX_EXTRA_ARGS=--sitepackages
 
 python:
-  - "2.7"
+    - "2.7"
 
 install:
-  - "pip install tox==1.7.1"
+    - "pip install tox==1.7.1 coveralls"
 
 script:
-  - "tox -e $TOX_ENV"
+    - tox -e $TOX_ENV $TOX_EXTRA_ARGS
 
 after_success:
-  - "coveralls"
+    - "coveralls"
