@@ -9,4 +9,4 @@ wheel==0.23.0
 tox==1.7.1
 
 PySide==1.2.2
-pytest-qt==1.0.2
+pytest-qt==1.1
