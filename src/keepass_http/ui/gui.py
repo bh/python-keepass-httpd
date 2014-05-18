@@ -76,12 +76,20 @@ class RequireDatabasePassphraseUi(QtGui.QMainWindow):  # pragma: no cover
         self._success = success
         self.ui.close()
 
+    def _center_widgets(self):
+        qr = self.ui.frameGeometry()
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.ui.move(qr.topLeft())
+
     @classmethod
     def do(cls, unused_try_count):
         app = _get_app()
         window = cls()
         window.ui.show()
+        window._center_widgets()
         window.activateWindow()
+
         app.exec_()
         return window._success
 
@@ -116,11 +124,26 @@ class ClientConnectDecisionUi(QtGui.QMainWindow):  # pragma: no cover
         self._client_name = self.baseui.client_name.text()
         self._exit()
 
+    def _center_widgets(self):
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+
+        # base form
+        qr = self.baseui.frameGeometry()
+        qr.moveCenter(cp)
+        self.baseui.move(qr.topLeft())
+
+        # dialog
+        qr = self.dialog.frameGeometry()
+        qr.moveCenter(cp)
+        self.dialog.move(qr.topLeft())
+
     @classmethod
     def do(cls):
         app = _get_app()
         window = cls()
         window.dialog.show()
+        window._center_widgets()
         window.activateWindow()
+
         app.exec_()
         return window._client_name
