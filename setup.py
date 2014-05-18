@@ -21,7 +21,7 @@ with open("README.rst") as readme_file:
 
 
 setup(name="keepass_http",
-      version="0.4.3",
+      version="0.4.4",
       description="Python Keepass HTTPD for ChromeIPass and PassIFox",
       long_description=long_description,
       author="Benjamin Hedrich",
