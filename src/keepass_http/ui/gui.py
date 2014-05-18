@@ -54,6 +54,7 @@ class RequireDatabasePassphraseUi(QtGui.QMainWindow):  # pragma: no cover
 
         self.setCentralWidget(self.ui)
         self.ui.passphrase.setFocus()
+        self.ui.passphrase.returnPressed.connect(self.try_authenticate)
 
         self.ui.buttons.accepted.connect(self.try_authenticate)
         self.ui.buttons.rejected.connect(partial(self._exit, False))
@@ -101,6 +102,8 @@ class ClientConnectDecisionUi(QtGui.QMainWindow):  # pragma: no cover
         if decision == QtGui.QDialog.Accepted:
             self.baseui.show()
             self.baseui.client_name.setFocus()
+            self.baseui.client_name.returnPressed.connect(self.name_entered)
+
             self.baseui.buttons.accepted.connect(self.name_entered)
             self.baseui.buttons.rejected.connect(self._exit)
         else:
