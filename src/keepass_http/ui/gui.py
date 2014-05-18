@@ -79,6 +79,7 @@ class RequireDatabasePassphraseUi(QtGui.QMainWindow):  # pragma: no cover
         app = _get_app()
         window = cls()
         window.ui.show()
+        window.activateWindow()
         app.exec_()
         return window._success
 
@@ -115,5 +116,6 @@ class ClientConnectDecisionUi(QtGui.QMainWindow):  # pragma: no cover
         app = _get_app()
         window = cls()
         window.dialog.show()
+        window.activateWindow()
         app.exec_()
         return window._client_name
