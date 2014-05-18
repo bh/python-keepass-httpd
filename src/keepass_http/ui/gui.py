@@ -53,6 +53,8 @@ class RequireDatabasePassphraseUi(QtGui.QMainWindow):  # pragma: no cover
         self.ui = _read_ui_file("require_passphrase.ui", self)
 
         self.setCentralWidget(self.ui)
+        self.ui.passphrase.setFocus()
+        self.ui.passphrase.returnPressed.connect(self.try_authenticate)
 
         self.ui.buttons.accepted.connect(self.try_authenticate)
         self.ui.buttons.rejected.connect(partial(self._exit, False))
@@ -74,11 +76,20 @@ class RequireDatabasePassphraseUi(QtGui.QMainWindow):  # pragma: no cover
         self._success = success
         self.ui.close()
 
+    def _center_widgets(self):
+        qr = self.ui.frameGeometry()
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.ui.move(qr.topLeft())
+
     @classmethod
     def do(cls, unused_try_count):
         app = _get_app()
         window = cls()
         window.ui.show()
+        window._center_widgets()
+        window.activateWindow()
+
         app.exec_()
         return window._success
 
@@ -98,6 +109,9 @@ class ClientConnectDecisionUi(QtGui.QMainWindow):  # pragma: no cover
     def should_connect_with_client(self, decision):
         if decision == QtGui.QDialog.Accepted:
             self.baseui.show()
+            self.baseui.client_name.setFocus()
+            self.baseui.client_name.returnPressed.connect(self.name_entered)
+
             self.baseui.buttons.accepted.connect(self.name_entered)
             self.baseui.buttons.rejected.connect(self._exit)
         else:
@@ -110,10 +124,26 @@ class ClientConnectDecisionUi(QtGui.QMainWindow):  # pragma: no cover
         self._client_name = self.baseui.client_name.text()
         self._exit()
 
+    def _center_widgets(self):
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+
+        # base form
+        qr = self.baseui.frameGeometry()
+        qr.moveCenter(cp)
+        self.baseui.move(qr.topLeft())
+
+        # dialog
+        qr = self.dialog.frameGeometry()
+        qr.moveCenter(cp)
+        self.dialog.move(qr.topLeft())
+
     @classmethod
     def do(cls):
         app = _get_app()
         window = cls()
         window.dialog.show()
+        window._center_widgets()
+        window.activateWindow()
+
         app.exec_()
         return window._client_name

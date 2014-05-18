@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Open Database</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QDialogButtonBox" name="buttons">
