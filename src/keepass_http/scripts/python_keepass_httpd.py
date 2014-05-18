@@ -7,12 +7,13 @@ Usage:
   python-keepass-httpd --version
 
 Options:
-  --help                    Show this screen
-  -v --version              Show version
-  -d --daemon               Start in daemon mode
-  -p --port PORT            Specify a port [default: 19455]
-  -h --host HOST            Specify a host [default: 127.0.0.1]
-  -l --loglevel LOGLEVEL    Loglevel to use [default: INFO]
+  --help                        Show this screen
+  -v --version                  Show version
+  -d --daemon                   Start in daemon mode
+  -p --port PORT                Specify a port [default: 19455]
+  -h --host HOST                Specify a host [default: 127.0.0.1]
+  -l --loglevel LOGLEVEL        Loglevel to use [default: INFO]
+  -k --keyfile path_to_keyfile  Use a key file instead of a passhprase [default: None]
 """
 
 import os
@@ -45,6 +46,10 @@ def main():
 
     is_daemon = arguments["--daemon"]
     database_path = arguments["<database_path>"]
+
+    key_file = arguments["--keyfile"]
+    print "x: %s" % key_file
+
     host = arguments["--host"]
     port = arguments["--port"]
     assert port.isdigit()
@@ -69,7 +74,7 @@ def main():
     backend = backends.BaseBackend.get_by_filepath(database_path)
     kpconf.set_backend(backend)
 
-    success = kpconf.get_selected_ui().RequireDatabasePassphraseUi.do(MAX_TRY_COUNT)
+    success = kpconf.get_selected_ui().OpenDatabaseUi.do(MAX_TRY_COUNT)
     if success is False:
         sys.exit("Wrong or no passphrase")
 

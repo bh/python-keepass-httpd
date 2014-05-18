@@ -5,7 +5,7 @@ from keepass import kpdb
 
 from keepass_http.backends import EntrySpec
 
-from . import BaseBackend, WrongPassword
+from . import BaseBackend, UnableToOpenDatabase
 
 
 class Backend(BaseBackend):
@@ -20,7 +20,7 @@ class Backend(BaseBackend):
             kdb = kpdb.Database(self.database_path, passphrase)
             self.database = kdb
         except ValueError:
-            raise WrongPassword("Incorrect password")
+            raise UnableToOpenDatabase("Incorrect password")
 
     def sync_entries(self):
         self.entries.purge()

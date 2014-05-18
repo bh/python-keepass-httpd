@@ -7,7 +7,7 @@ from functools import partial
 
 from PySide import QtCore, QtGui, QtUiTools
 
-from keepass_http.backends import WrongPassword
+from keepass_http.backends import UnableToOpenDatabase
 from keepass_http.core import Conf
 from keepass_http.utils import get_absolute_path_to_resource
 
@@ -42,7 +42,7 @@ def _read_ui_file(path, parent):  # pragma: no cover
     return widget
 
 
-class RequireDatabasePassphraseUi(QtGui.QMainWindow):  # pragma: no cover
+class OpenDatabaseUi(QtGui.QMainWindow):  # pragma: no cover
 
     def __init__(self, *args, **kwargs):
         QtGui.QMainWindow.__init__(*(self,) + args)
@@ -50,26 +50,41 @@ class RequireDatabasePassphraseUi(QtGui.QMainWindow):  # pragma: no cover
         # the keepassdatabase.
         self._success = None
 
-        self.ui = _read_ui_file("require_passphrase.ui", self)
+        self.ui = _read_ui_file("open_database.ui", self)
 
         self.setCentralWidget(self.ui)
-        self.ui.passphrase.setFocus()
-        self.ui.passphrase.returnPressed.connect(self.try_authenticate)
+
+        self.ui.passphrase_group.toggled.connect(lambda x: self.ui.filepath_group.setChecked(not x))
+        self.ui.filepath_group.toggled.connect(lambda x: self.ui.passphrase_group.setChecked(not x))
 
         self.ui.buttons.accepted.connect(self.try_authenticate)
         self.ui.buttons.rejected.connect(partial(self._exit, False))
 
+        self.ui.select_keyfile.clicked.connect(self._key_file_selected)
+
+    def _key_file_selected(self):
+        file_path, unused = QtGui.QFileDialog.getOpenFileName(self, "Select Keepass Key File", "", )
+
+        if file_path:
+            self.ui.file_path.setText(file_path)
+
     def try_authenticate(self, *args):
-        passphrase = self.ui.passphrase.text()
+        use_passphrase = self.ui.passphrase_group.isChecked()
         try:
-            Conf().backend.open_database(passphrase)
-        except WrongPassword:
+            if use_passphrase:
+                passphrase = self.ui.passphrase.text()
+                Conf().backend.open_database(passphrase=passphrase)
+            else:
+                key_file = self.ui.file_path.text()
+                Conf().backend.open_database(keyfile=key_file)
+
+        except UnableToOpenDatabase:
             statusbar = self.ui.statusBar()
-            msg = "Wrong passphrase, try again please."
+            msg = "Wrong %s, try again please." % ("password" if use_passphrase else "key file")
             statusbar.showMessage(msg)
             log.warning(msg)
         else:
-            log.info("Passphrase %s accepted" % ("*" * len(passphrase)))
+            log.info("%s accepted" % ("Password" if use_passphrase else "Key file"))
             self._exit(True)
 
     def _exit(self, success):

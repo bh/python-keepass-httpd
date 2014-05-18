@@ -8,7 +8,7 @@ class NoBackendError(Exception):
     pass
 
 
-class WrongPassword(Exception):
+class UnableToOpenDatabase(Exception):
     pass
 
 

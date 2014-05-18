@@ -3,7 +3,7 @@
 import mock
 import pytest
 
-from keepass_http.backends import WrongPassword
+from keepass_http.backends import UnableToOpenDatabase
 from keepass_http.utils import has_gui_support
 
 if has_gui_support():
@@ -25,7 +25,7 @@ skip_if_has_no_gui_support = pytest.mark.skipif(not has_gui_support(), reason="N
 @skip_if_has_no_gui_support
 def test_require_ui_passphrase_correct(qtbot):
     with mock.patch("keepass_http.ui.gui.Conf", TestConf):
-        window = gui.RequireDatabasePassphraseUi()
+        window = gui.OpenDatabaseUi()
 
         window.ui.show()
         qtbot.addWidget(window.ui)
@@ -42,14 +42,14 @@ def test_require_ui_passphrase_correct(qtbot):
         with mock.patch.object(TestBackend, "open_database") as mock_open_database:
             qtbot.mouseClick(button_ok, QtCore.Qt.LeftButton)
 
-            mock_open_database.assert_called_once_with(u'some passphrase')
+            mock_open_database.assert_called_once_with(passphrase=u'some passphrase')
         assert window._success is True
 
 
 @skip_if_has_no_gui_support
 def test_require_ui_passphrase_incorrect(qtbot):
     with mock.patch("keepass_http.ui.gui.Conf", TestConf):
-        window = gui.RequireDatabasePassphraseUi()
+        window = gui.OpenDatabaseUi()
 
         window.ui.show()
         qtbot.addWidget(window.ui)
@@ -64,19 +64,19 @@ def test_require_ui_passphrase_incorrect(qtbot):
         button_ok = buttons.button(buttons.Ok)
 
         with mock.patch.object(TestBackend, "open_database") as mock_open_database:
-            # when calling open_database() than raise the WrongPassword exception
-            mock_open_database.side_effect = [WrongPassword()]
+            # when calling open_database() than raise the UnableToOpenDatabase exception
+            mock_open_database.side_effect = [UnableToOpenDatabase()]
 
             qtbot.mouseClick(button_ok, QtCore.Qt.LeftButton)
 
-            mock_open_database.assert_called_once_with(u'some passphrase')
+            mock_open_database.assert_called_once_with(passphrase=u'some passphrase')
 
         assert window._success is None
 
 
 @skip_if_has_no_gui_support
 def test_require_ui_passphrase_quit_or_cancel(qtbot):
-    window = gui.RequireDatabasePassphraseUi()
+    window = gui.OpenDatabaseUi()
 
     window.ui.show()
     qtbot.addWidget(window.ui)

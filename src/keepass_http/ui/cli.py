@@ -22,7 +22,7 @@ class ClientConnectDecisionUi(object):
         return client_name
 
 
-class RequireDatabasePassphraseUi(object):
+class OpenDatabaseUi(object):
 
     @staticmethod
     def do(max_try_count):
@@ -34,7 +34,7 @@ class RequireDatabasePassphraseUi(object):
                                          kpconf.backend.database_path)
             try:
                 kpconf.backend.open_database(passphrase)
-            except backends.WrongPassword:
+            except backends.UnableToOpenDatabase:
                 log.info("Wrong passphrase, please try again. (attempt [%s/%s]" % (try_count,
                                                                                    max_try_count))
                 try_count += 1

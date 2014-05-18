@@ -6,7 +6,7 @@ from urlparse import urlparse
 import libkeepass
 from lxml import etree, objectify
 
-from keepass_http.backends import BaseBackend, EntrySpec, WrongPassword
+from keepass_http.backends import BaseBackend, EntrySpec, UnableToOpenDatabase
 
 
 class Backend(BaseBackend):
@@ -16,12 +16,20 @@ class Backend(BaseBackend):
             return True
         return False
 
-    def open_database(self, passphrase):
+    def open_database(self, passphrase=None, keyfile=None):
+        assert passphrase or keyfile, "Either passphrase or keyfile is required!"
+
+        if passphrase:
+            cred = {"password": passphrase}
+        elif keyfile:
+            cred = {"keyfile": keyfile}
+
         try:
-            with libkeepass.open(self.database_path, password=passphrase) as kdb:
+            with libkeepass.open(self.database_path, **cred) as kdb:
                 self.database = kdb
+
         except IOError:
-            raise WrongPassword("Incorrect password")
+            raise UnableToOpenDatabase("Incorrect password or key file")
 
     def sync_entries(self):
         self.entries.purge()

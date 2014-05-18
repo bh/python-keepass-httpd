@@ -3,7 +3,6 @@
 import mock
 import pytest
 
-from keepass_http.backends import WrongPassword
 from keepass_http.utils import has_gui_support
 
 if has_gui_support():
