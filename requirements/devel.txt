@@ -1,6 +1,6 @@
 -r testing.txt
 ipdb==0.8
-ipython==2.0.0
+ipython==7.16.3
 autopep8==1.0.2
 isort==3.8.0
 pyflakes==0.8.1
